@@ -2,7 +2,8 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 library(shiny)
 
-source("templateApp/templateModule.R")
+source("./templateApp/templateModule.R")
+source("./templateMetadataInfo/parseMetadataInfo.R")
 
 ########## UI ##############
 
@@ -11,8 +12,8 @@ ui <- fluidPage(
   navbarPage(
     "EML Manager",
     navbarMenu("Fill information file",
-      tabPanel("Input_1",
-        inputUi("input",c("nom_1","nom_2"),c("tag_1","tag_2"),c("thierry","joël"))
+      tabPanel("Personnel",
+        inputUi("Personnel", metadataFields = parseMetadataInfo("Personnel"))
       )
     ),
     tabPanel("Generate EML file"
@@ -29,7 +30,8 @@ ui <- fluidPage(
 ######### Server #############
 
 server <- function(input, output, session){
-  output <- callModule(inputServer,"input", c("tag_1","tag_2"))
+  output <- callModule(inputServer,"Personnel", 
+                       xmlName = parseMetadataInfo("Personnel")$xmlName)
 }
 
 ####### Launch App ###########
