@@ -5,25 +5,25 @@ This tool provides a UI (R shinyApp) to allow any user to fill in information wh
 R-EMD is focused on filling those templates files.
 
 ## Git Structure
-The following tree is generated with the bash package 'tree'. Folders ending with '/' contain only files that are not informative (e.g. only called while scripts are used).
-.
-├── README.md
-└── shinyApp
-    ├── _infoBuilder
-    │   ├── csvMerger.R
-    │   ├── metadataFieldsTables
-    │   ├── tableFiles/
-    │   ├── xsdFiles/
-    │   ├── xsdParser.py
-    │   └── xsdParser.R
-    ├── main.R
-    ├── templateApp
-    │   ├── templateApp.R
-    │   └── templateModule.R
-    └── templateMetadataInfo
-        ├── parseMetadataInfo.R
-        └── templates
-            └── metadataPersonnel.csv
+The following tree is generated with the bash package 'tree'. Folders ending with '/' contain only files that are not informative (e.g. only called while scripts are used).  
+.  
+├── README.md  
+└── shinyApp  
+&nbsp;&nbsp;&nbsp;&nbsp;├── _infoBuilder  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── csvMerger.R  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── metadataFieldsTables  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── tableFiles/  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── xsdFiles/  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── xsdParser.py  
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── xsdParser.R  
+&nbsp;&nbsp;&nbsp;&nbsp;├── main.R  
+&nbsp;&nbsp;&nbsp;&nbsp;├── templateApp  
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── templateApp.R  
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── templateModule.R  
+&nbsp;&nbsp;&nbsp;&nbsp;└── templateMetadataInfo  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── parseMetadataInfo.R  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── templates  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── metadataPersonnel.csv  
 
 8 directories, 58 files
 
