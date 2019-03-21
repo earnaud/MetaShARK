@@ -1,4 +1,4 @@
-xmlElement,xmlAttribute,placeholder,required
+ufName,xmlName,placeholder,required
 First Name,givenName,Kelman,TRUE
 Middle Initial,middleInitial,R,FALSE
 Last Name,surName,Wieder,TRUE
