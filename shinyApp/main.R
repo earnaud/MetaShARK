@@ -2,19 +2,37 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 library(shiny)
 
-source("templateApp/templateModule.R")
+source("./templateApp/templateModule.R")
+source("./templateMetadataInfo/parseMetadataInfo.R")
 
 ########## UI ##############
 
-ui <- fluidPage(
-  # titlePanel("EML Manager"),
+path="./templateMetadataInfo/templates/"
+files = dir(path)
+files = sapply(files, function(file){
+  file = gsub("metadata","", file)
+  file = gsub(".csv","",file)
+  return(file)
+})
+
+# Build tabs UI elements contents
+tabPanels = lapply(1:length(files), function(file){
+  tabPanel(files[file],
+           sidebarPanel(
+             "Insert tree for user here !"
+           ),
+           mainPanel(
+             inputUi(files[file],
+                     metadataFields = parseMetadataInfo(files[file])))
+           )
+})
+# UI itself
+ui <- shinyUI(
   navbarPage(
     "EML Manager",
-    navbarMenu("Fill information file",
-      tabPanel("Input_1",
-        inputUi("input",c("nom_1","nom_2"),c("tag_1","tag_2"),c("thierry","joël"))
-      )
-    ),
+    do.call(navbarMenu,
+            c("Fill information file", tabPanels)
+            ),
     tabPanel("Generate EML file"
       # run make_eml
     ),
@@ -29,7 +47,11 @@ ui <- fluidPage(
 ######### Server #############
 
 server <- function(input, output, session){
-  output <- callModule(inputServer,"input", c("tag_1","tag_2"))
+  output <- lapply(files, 
+                   function(file){
+                    callModule(inputServer,file, 
+                    xmlName = parseMetadataInfo(file)$xmlName)
+                  })
 }
 
 ####### Launch App ###########

@@ -46,32 +46,60 @@ simpleInputRow <- function(id,
 }
 
 ####### UI #######
-inputUi <- function(id, xmlElements, xmlAttributes, placeholders){
+
+# inputUI frame for input information concerning inputs
+# inputs:
+# - id: for modularization purposes
+# - ufName: user-friendly synonym of xmlElement
+# - xmlName: dev-friendly name of xmlElement
+# - placeholder: example of input
+# - required: vector ofindicating whether the field shall be filled or not
+# OR
+# - metadataFields: table of (ufName,xmlName,placeholder,required)
+inputUi <- function(id="test",
+                    ufName = "Gentle Name", 
+                    xmlName = "gentleTag",
+                    placeholders,
+                    required,
+                    metadataFields = c("Gentle Name", "gentleTag")){
   
   # required by modularization: create a namespace
   ns <- NS(id)
   
+  # Acquire arguments by a way or another
+  if(is.null(ufName) && is.null(xmlName) && is.null(metadataFields))
+    stop("No fields are input !")
+  if(!(is.null(metadataFields))){
+    ufName = metadataFields$ufName
+    xmlName = metadataFields$xmlName
+    if(length(metadataFields$placeholder) != 0)
+      placeholders = metadataFields$placeholder
+    required = metadataFields$required
+  }
   
-  if(length(xmlElements) != length(xmlAttributes))
-    stop("[Dev] xmlElements, xmlAttributes length differ !")
-  if(length(placeholders) > 0 && length(placeholders) != length(xmlElements)){
+  
+  # Check arguments integrity
+  if(length(ufName) != length(xmlName))
+    stop("[Dev] ufName, xmlName length differ !")
+  if(length(placeholders) > 0 && length(placeholders) != length(ufName)){
     warning("Not enough placeholders: replaced by a NULL vector")
     placeholders <- NULL
   }
   
+  # UI graphical display
   tagList(
     splitLayout(
       h2("Enter information"),
       h2("Current state")
     ),
-  
-    lapply(1:length(xmlElements), 
+    
+    lapply(1:length(ufName), 
            function(i){
              if(i%%2!=0) bg = TRUE
              if(i%%2==0) bg = FALSE
              simpleInputRow(id=id,
-                            ns(xmlElements[i]),
-                            ns(xmlAttributes[i]),
+                            ns(ufName[i]),
+                            ns(xmlName[i]),
                             ns(placeholders[i]),
                             bg)
            }
@@ -81,12 +109,12 @@ inputUi <- function(id, xmlElements, xmlAttributes, placeholders){
 
 ##### Server #####
 
-inputServer <- function(input,output, session, xmlAttributes){
+inputServer <- function(input,output, session, xmlName){
   
   # verbose function
-  lapply(1:length(xmlAttributes),
+  lapply(1:length(xmlName),
          function(i){
-           attribute <- xmlAttributes[i]
+           attribute <- xmlName[i]
            output[[attribute]] <- reactive({
              input[[attribute]]
            })
