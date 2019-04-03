@@ -5,59 +5,81 @@
 
 # IMPORTS
 
-# source("~/Documents/libs/R/PersonalUtilities/utilities.R", chdir = TRUE)
 source("guidelinesFunctions.R")
+source("multiApply.R")
 
-# Build hierarchy 
+# Build full hierarchy 
 buildSystemList <- function(files, focus)
 {
   # read files
   lists <- lapply(files, function(file){
     return(as_list(read_xml(file)))
   })
+  
   # renames first-level lists (files' lists)
-  names(lists) <- sapply(files, 
-                        function(file){
-                          gsub("xsdFiles/","",
-                               gsub("\\.xsd","",file)) 
-                        })
+  attr(lists,"names") <- gsub("xsdFiles/","",
+                              gsub("\\.xsd","",
+                                   files
+                                   )
+                              ) 
+  
   # Prepare recursion
   toApplyFUNS = list(
-    quote(addRAttributes), # first as attributes are fragile structures in R
-    quote(renameName),
-    quote(addPathway)
+    "addRAttributes", # first as attributes are fragile structures in R
+    "renameName",
+    "addPathway"
   )
-  
+
   toApplyARGS = list(
     list(NA),
-    list(focus),
-    list(quote(path))
+    list(filter = focus,
+         numbers = TRUE),
+    list(path = quote(path))
   )
-  # apply recursion
-  lists <- multiApply(lists, toApplyFUNS, toApplyARGS)
-  # l2 <- lists; View(l2)
+  
+    # apply recursion
+  lists <- multiApply(lists, 
+                      toApplyFUNS, 
+                      toApplyARGS)
+
   return(lists)
 }
 
-# make the hierarchy from `buildLists` as a user-friendly list
-# - Make names user-friendly
-buildUserList <- function(li, focus){
-  # prepare recurstion
-  toApplyFUNS = list(
-    quote(movedTypedElements),
-    quote(shortNames)
-  )
-  toApplyARGS = list(
-    list(NA),
-    list("^.*(_|:)")
-  )
-  # apply recursion
-  userList <- multiApply(li, FUNS = toApplyFUNS, ARGS = toApplyARGS)
-  browser()
-  Prune(userTree,
-        pruneFun = function(node){
-          return(tree.find(node, c("complexType","element")))
+# Build user-friendly hierarchy from full one
+# - No xml elements reference a complexType
+# - names are back to their 'name' attribute value
+buildUserList <- function(li, focus, filter){
+  
+  # Pruning
+  mi <- as.Node(li)
+  Prune(mi,
+        function(node){
+          return(tree.find(node,
+                           filter))
         })
+  userList <- as.list(mi)[-1]
+  
+  # prepare recursion
+  toApplyFUNS = list(
+    "flatten",             # remove non-UF elements
+    "betterNames",          # make names user-legible
+    "removeRAttributes",
+    "prettyList"
+  )
+  
+  toApplyARGS = list(
+    list(filter = filter),
+    list(NA),
+    list(NA),
+    list(path = quote(path))
+  )
+  
+  # apply recursion
+  userList <- multiApply(userList, 
+                         FUNS = toApplyFUNS,
+                         ARGS = toApplyARGS,
+                         setPath = FALSE)
+
   return(userList)
 }
 
