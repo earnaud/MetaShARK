@@ -13,7 +13,8 @@
 multiApply <- function(target, 
                        FUNS = list(),
                        ARGS = rep(NA, length(FUNS)),
-                       path = "Root"){
+                       path = "Root",
+                       setPath = TRUE){
   #- Validity checks
   if(length(FUNS) != length(ARGS)
      && !is.na(ARGS)) 
@@ -22,7 +23,14 @@ multiApply <- function(target,
   if(length(FUNS) == 0) 
     stop("FUNS shall not be empty")
   
-  if(!is.list(target)) return(target)
+  if(!is.list(target))
+    return(target)
+  
+  ## Preparation of visuals
+  # cure by avoiding double numbering
+  if(grepl("[0-9]+_[0-9]+_",path)){
+    path <- gsub("[0-9]+_([0-9]+_)","\\1",path)
+  }
   
   #- Recursion
   if(!is.null(attributes(target)))
@@ -30,8 +38,9 @@ multiApply <- function(target,
   target <- lapply(seq_along(target),
                    function(t,f,a,p,i){
                      multiApply(t[[i]], f, a,
-                                paste(path, names(t)[i], sep="/"))
-                   }, 
+                                paste(path, paste0(i,"_",names(t)[i]), sep="/"),
+                                setPath = setPath)
+                   },
                    t = target,
                    f = FUNS,
                    a = ARGS,
@@ -39,30 +48,32 @@ multiApply <- function(target,
   if(exists("target.attributes"))
     attributes(target) <- target.attributes
   
-    
-  #- Apply FUNS
-  for(i in 1:length(FUNS)){
-
-    # argumented functions
-    if(!is.na(ARGS[[i]])){
-      # browser()
-      ARG = unlist(ARGS[[i]])
-      if(is.list(ARG)) ARG <- ARG[[1]] # Specific !!
-      if(is.symbol(ARG)) ARG <- eval(ARG)
-      
-      
-      target <- lapply(list(target),
-                       FUNS[[i]],
-                       ARG
-                      )[[1]]
-    }
-    
-    # object-only functions
-    else {
-      target <- lapply(list(target),
-                       FUNS[[i]]
-                       )[[1]]
-    }
+  
+  
+  # Functions application
+  sapply(seq_along(FUNS),
+         function(i){
+           
+           # catch functions
+           fun <- FUNS[[i]]
+           
+           # catch arguments
+           arg <- ARGS[[i]]
+           if(is.na(unlist(arg)[1])) # if NA, arg shall contain only one element
+             arg <- list(li = target)
+           else
+             arg <- c(li = list(target), arg)
+           
+           # execute functions
+           target <<- do.call(fun, arg)
+         })
+  
+  
+  
+  # adds path to the target as an attribute
+  if(setPath){
+    if(is.null(attributes(target))) attributes(target) <- list()
+    if(!is.null(path)) attr(target, "path") <- path
   }
   return(target)
 }
