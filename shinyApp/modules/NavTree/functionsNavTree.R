@@ -1,5 +1,29 @@
 # functionsNavTree.R
 
+# --- UI display
+
+# extracts the targetted EML content from a list
+extractContent <- function(content){
+  if(any(grepl("annotation", attr(content,"names")))){
+    # content
+    out <- unlist(content)
+    out <- out[which(!grepl("R-Attributes", attr(out, "names")))]
+    out <- sapply(out,
+                 gsub,
+                 pattern = "\n| +",
+                 replacement = " ")
+    # titles
+    attr(out, "names") <- gsub("^.*_","",attr(out, "names"))
+    
+    return(paste0(out, sep = "\n\n"))
+  }
+  else {
+    return("No content matching the target criterion")
+  }
+}
+
+# --- List handling
+
 # Takes a hierarchy list (tree), a path written in a vector pasted
 # with sep = @ep, and returns the leaf
 # @param tree: hierarchy list with named nodes
@@ -14,8 +38,10 @@ followPath <- function(tree, path, sep = "/"){
     stop("path shall be a vector of characters")
   if(sep == "")
     stop("path can't be parsed with @sep")
+  
   if(is.list(path))
     path <- unlist(path)
+  
   # Processing
   path <- unlist(strsplit(path,sep))
   path = path[!path == "Root"]
@@ -24,7 +50,7 @@ followPath <- function(tree, path, sep = "/"){
     tree <- tree[[ path[1] ]]
     path = path[-1]
   }
-  
+
   return(tree)
 }
 
