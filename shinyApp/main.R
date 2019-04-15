@@ -1,4 +1,5 @@
-# main.R
+# main.
+rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ### IMPORTS ###
@@ -9,7 +10,7 @@ source("modules/NavTree/moduleNavTree.R", chdir = TRUE)
 ### RESOURCES ###
 
 # IM: Id Modules - first: session - last: output id - others: intermediary id
-IM.navTree = c("navTreeModule", "navTree", "navTreeSelect")
+IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath")
 
 ### UI ###
 ui <- fluidPage(
