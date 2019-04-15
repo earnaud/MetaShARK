@@ -20,14 +20,14 @@ navTreeUI <- function(id, IM){
 
   # UI output
   pageWithSidebar(
-    headerPanel(IM[2]),
+    headerPanel("Documentation"),
     sidebarPanel(
       shinyTree(outputId = ns(IM[2]),
                 search = TRUE)
     ),
     mainPanel(
-      "Currently Selected:",
-      verbatimTextOutput(ns(IM[3])),
+      uiOutput( ns(IM[4]) ),
+      uiOutput( ns(IM[3]) ),
       style = "word-wrap: break-word;"
     )
   )
@@ -57,10 +57,14 @@ navTree <- function(input, output, session, IM, tree = UserGuideline){
                     unlist(node),
                     sep="/")
               )
+      output[[IM[4]]] <- renderText(as.character(h3(userPath)))
+      
       # fetch the systemGuideLine path in the userGuideLine list
       systemPath <- followPath(tree, userPath)
-      if(is.list(systemPath))
-        return(userPath)
+
+      if(!is.character(systemPath))
+        systemPath <- commonPath(systemPath,unlist(node))
+        # return(userPath)
       
       # fetch the eml-xsd content in the systemGuideLine list
       systemContent <- followPath(SystemGuideline, systemPath)
