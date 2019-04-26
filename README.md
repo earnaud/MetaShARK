@@ -1,4 +1,4 @@
-# ARSS
+# ARSD
 Automated R Shiny Darwin Core.
 _First released on 26-04-2019_
 
