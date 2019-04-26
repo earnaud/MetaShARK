@@ -11,7 +11,7 @@ You can launch the app through the 'main.R' script (shinyApp/main.R). The suppor
 
 ### Required libraries
 
-ARSE require two libraries to perform:
+ARSD require two libraries to perform:
 * [shiny](https://shiny.rstudio.com/)
 * [shinyTree](https://github.com/shinyTree/shinyTree)
 
@@ -21,6 +21,9 @@ ARSE require two libraries to perform:
 
 #### Features
 The tool allows to browse the documentation contained at any level of the DwC XML schema. Still, the documentation has not yet been implemented (as it is not contained in the XSD files). 
+
+#### Incoming features
+A full integration of the EML and DwC standards in the same app
 
 ## Authors
 * Elie Arnaud (developper) - elie.arnaud@mnhn.fr
