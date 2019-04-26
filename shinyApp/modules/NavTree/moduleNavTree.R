@@ -3,7 +3,7 @@
 # Imports
 library(shinyTree)
 source("functionsNavTree.R")
-source("../../_infoBuilder/multiApply.R")
+source("../../.infoBuilder/multiApply.R")
 
 # Guidelines
 cat("Loading Guidelines: \n")
@@ -13,6 +13,8 @@ cat("* User Guideline successfully loaded !\n")
 cat("* Loading System Guideline ...\r")
 SystemGuideline = as.list(readRDS("../../guideLines/dwc.SystemGuidelineList.RData"))
 cat("* System Guideline successfully loaded !\n")
+
+print(identical(UserGuideline, SystemGuideline))
 
 # UI functions
 navTreeUI <- function(id, IM){
