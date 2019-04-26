@@ -34,3 +34,6 @@ Here is the expected plan for further releases:
 
 ## Authors
 * Elie Arnaud (developper) - elie.arnaud@mnhn.fr
+
+## Submit issues
+For anny issue submittance, please add a single-word tag in bracket before the title of your issue. Do not hesitate also to describe it exhaustively and add a label.
