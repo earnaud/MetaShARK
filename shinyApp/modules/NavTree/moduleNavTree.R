@@ -8,10 +8,10 @@ source("../../_infoBuilder/multiApply.R")
 # Guidelines
 cat("Loading Guidelines: \n")
 cat("* Loading User Guideline ...\r")
-UserGuideline = as.list(readRDS("../../guideLines/UserGuidelineList.RData"))
+UserGuideline = as.list(readRDS("../../guideLines/dwc.UserGuidelineList.RData"))
 cat("* User Guideline successfully loaded !\n")
 cat("* Loading System Guideline ...\r")
-SystemGuideline = as.list(readRDS("../../guideLines/SystemGuidelineList.RData"))
+SystemGuideline = as.list(readRDS("../../guideLines/dwc.SystemGuidelineList.RData"))
 cat("* System Guideline successfully loaded !\n")
 
 # UI functions
