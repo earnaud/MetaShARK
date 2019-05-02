@@ -15,6 +15,7 @@ multiApply <- function(target,
                        ARGS = rep(NA, length(FUNS)),
                        path = "Root",
                        setPath = TRUE){
+
   #- Validity checks
   if(length(FUNS) != length(ARGS)
      && !is.na(ARGS)) 

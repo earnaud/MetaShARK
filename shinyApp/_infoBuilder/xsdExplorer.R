@@ -32,7 +32,7 @@ buildSystemList <- function(files, focus)
 
   toApplyARGS = list(
     list(NA),
-    list(filter = focus,
+    list(focus = focus,
          numbers = TRUE),
     list(path = quote(path))
   )
@@ -61,17 +61,17 @@ buildUserList <- function(li, focus, filter){
   
   # prepare recursion
   toApplyFUNS = list(
-    "flatten",             # remove non-UF elements
-    "betterNames",          # make names user-legible
-    "removeRAttributes",
-    "prettyList"
+    "removeTypedElements",# remove 'typed' elements
+    "flatten",            # remove non-UF elements
+    "prettyList",         # make names user-legible
+    "removeRAttributes"   # remove R-Attributes (= XML attributes translated in R)
   )
   
   toApplyARGS = list(
+    list(NA),
     list(filter = filter),
-    list(NA),
-    list(NA),
-    list(path = quote(path))
+    list(path = quote(path)),
+    list(NA)
   )
   
   # apply recursion

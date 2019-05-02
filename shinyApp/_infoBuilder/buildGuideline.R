@@ -27,11 +27,13 @@ source("xsdExplorer.R")
             , "group"
             , "complexType"
             , "R-Attributes"
-            , "simpleContent")
+            , "simpleContent"
+            , "extension")
   filter = c("simpleType:"
              , "complexType:"
              , "simpleContent:"
              , "element:"
+             , "group:"
              , gsub("xsdFiles/","", gsub("\\.xsd","",files))
              )
   cat(round(Sys.time() - start.time, 1),"s.\n"); start.time = Sys.time()

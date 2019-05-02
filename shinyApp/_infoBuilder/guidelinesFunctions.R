@@ -38,19 +38,18 @@ addRAttributes <- function(li = list()){
   return(li)
 }
 
-# If an element of @filter is found in the names of the list, it is renamed by
+# If an element of @focus is found in the names of the list, it is renamed by
 # pasting this element as prefix
 # # This function has an EML-specific feature linked to 'name' attributes (not 'names')
 # @param l: targetted list
-# @param filter: vector of words to catch. If those are catched, the function
+# @param focus: vector of words to catch. If those are catched, the function
 #                will fetch for their 'name' attributes (EML-specific) and 
 #                paste them as a suffix to the list element name
 # @param numbers: logical. If TRUE, each list's elements' names will be
 #                 suffixed with their position number in this list level.
-renameName <- function(li = list(), filter = character(), numbers = TRUE){
+renameName <- function(li = list(), focus = character(), numbers = TRUE){
   #- Validity checks
   if(!is.list(li) || length(li) == 0) return(li)
-  
   
   if(numbers){
     
@@ -62,19 +61,26 @@ renameName <- function(li = list(), filter = character(), numbers = TRUE){
     
   }
   
-  # if(isFound("group", attr(l,"names"))) browser()
-  
   #- main loop
   i <- 1
   while(i <= length(li)){
     # if something interesting is found among the names of li, rename it
     
-    if(isFound(filter, attr(li,"names")[i])
-       && "NAME" %in% attr(li[[i]][["R-Attributes"]], "names")){ # !!! XML-specific 
+    if(isFound(focus, attr(li,"names")[i])
+       && "NAME" %in% attr(li[[i]][["R-Attributes"]], "names")){
       nameToSet = paste0(
         attr(li,"names")[i],
         ":", li[[i]][["R-Attributes"]][["NAME"]]
         )
+      attr(li,"names")[i] <- nameToSet
+      
+    } # end if
+    if(isFound(focus, attr(li,"names")[i])
+       && "REF" %in% attr(li[[i]][["R-Attributes"]], "names")){
+      nameToSet = paste0(
+        attr(li,"names")[i],
+        ":", li[[i]][["R-Attributes"]][["REF"]]
+      )
       attr(li,"names")[i] <- nameToSet
       
     } # end if
@@ -85,7 +91,8 @@ renameName <- function(li = list(), filter = character(), numbers = TRUE){
   # EML-specific exception
   if(any(grepl("R-Attributes", attr(li,"names"))))
     attr(li,"names")[grepl("R-Attributes", attr(li,"NAMES"))] <- "R-Attributes"
-
+  
+  
   return(li)
   
 }
@@ -110,8 +117,9 @@ addPathway <- function(li, path){
     return(NULL)
   
   # names the li elements if there are some that need
-  if(any(is.na(attr(li,"names"))))
-    attr(li,"names")[is.na(attr(li,"names"))] = paste("n_", which(is.na(attr(li,"names"))))
+  if(!is.null(attr(li,"names")))
+    if(any(is.na(attr(li,"names"))))
+      attr(li,"names")[is.na(attr(li,"names"))] = paste("n_", which(is.na(attr(li,"names"))))
 
   # check if a 'R-Attributes' field exist: where to save the pathway
   if(!('R-Attributes' %in% attr(li,"names"))){ # add a 'R-Attributes' element
@@ -129,33 +137,32 @@ addPathway <- function(li, path){
 }
 
 
-# prune a list from branches which don't contain focused words.
-# pruneList <- function(li, filter){
-#   if(!is.list(li))
-#     return(li)
-#   # remove simply any branch named after filter$prune
-#   li <- li[!sapply(attr(li, "names"),
-#                function(n,
-#                         f = filter$prune){
-#                  return(any(grepl(n, f)))
-#                })]
-#   # flatten elements found in filter$flatten
-#   sapply(filter$flatten,
-#          function(f){
-#            if(any(grepl(f,attr(li,"names")))){
-#              tmp <- unlist(li[grepl(f, attr(li,"names"))], recursive = FALSE)
-#              attr(tmp,"names") <- paste0(gsub(".*\\.","",attr(tmp,"names")),
-#                                          "_",
-#                                          which(grepl(f, attr(li,"names"))))
-#              li <- replace(li, which(grepl(f, attr(li,"names"))), tmp)
-#              browser()
-#            }
-#          })
-#   # 
-#   
-#   if(any(grepl("choice",names(li)))) browser()
-#   return(li)
-# }
+
+# remove typed elements aka elements sharing name with a
+# 'element's name-Type' complexType. 
+removeTypedElements <- function(li){
+  if(!has_child(li))
+    return(li)
+
+  if(any(grepl("element",attr(li,"names")))
+     && any(grepl("complexType",attr(li,"names")))){
+    elements <- attr(li,"names")[which(grepl("element",attr(li,"names")))]
+    cplxTypes <- attr(li,"names")[which(grepl("complex",attr(li,"names"))
+                                        & grepl("Type$",attr(li,"names")))]
+    elements <- elements[sapply(elements, function(pat, x){
+      any(grepl(gsub("^.*:","",pat),x,ignore.case = TRUE))
+    },
+    x = cplxTypes)]
+
+    if(length(elements) > 0)
+      li <- li[-which(attr(li,"names") %in% elements)]
+    
+    if(any(grepl("attribute.*List",attr(li,"names"))))
+      browser()
+  }
+
+  return(li)
+}
 
 # flatten lists levels that aren't user-friendly
 # as it works on list levels' children, it is compatible with the
@@ -163,23 +170,69 @@ addPathway <- function(li, path){
 flatten <- function(li, filter){
   if(!has_child(li))
     return(li)
-  # flatten the list level if it is not user-friendly
-  # if(grepl("schema",attr(li,"names"))) browser()
-  if(!isFound(filter, names(li))){
+  
+  # flatten the list level if it is totally not user-friendly
+  if(!isFound(filter, attr(li,"names"))){
     li <- unlist(li, recursive = FALSE) # get back one list level
-    if(!is.null(names(li)))
-      names(li) <- gsub("^.*\\.","",names(li))
+    if(!is.null(attr(li,"names")))
+      attr(li,"names") <- gsub("^.*\\.","",attr(li,"names"))
   }
+  
+  # misc cleaning - remove choice/sequence
+  if(any(grepl("choice", attr(li,"names"))))
+    li <- replace(li, 
+                  which(grepl("choice", attr(li,"names"))),
+                  unlist(li[
+                    which(grepl("choice", attr(li,"names")))
+                    ]))
+  if(any(grepl("sequence", attr(li,"names"))))
+    li <- replace(li, 
+                  which(grepl("sequence", attr(li,"names"))),
+                  unlist(li[
+                    which(grepl("sequence", attr(li,"names")))
+                    ]))
+  if(!is.null(attr(li,"names")))
+    attr(li,"names") <- gsub("^.*\\.","",attr(li,"names"))
+
+  
   return(li)
 }
 
 # make all names shorter according to the pattern
 # @param li: list whose names will be shortened
 # @param pattern: regex to look for to trigger names shortening
-betterNames <- function(li){
+prettyList <- function(li, path){
+  # Validity checks
   if(!is.list(li) || is.null(names(li))) return(li)
+  
+  # adds path as value for 'list()'-valued nodes before modifying names
+  if(has_child(li)){
+    lone <- which(sapply(li,
+                         function(ll) 
+                           identical(ll, list())
+    )
+    )
+    if(length(lone) > 0)
+      li[lone] <- sapply(lone,
+                         function(l) 
+                           return(paste(path, attr(li,"names")[l], sep =  "/"))
+      )
+  }
+  
+  # Improve legibility of list elements names  
   attr(li, "names") = gsub("(_).+:", "\\1", attr(li, "names"))
   attr(li, "names") = gsub("([a-z])([A-Z])","\\1 \\2", attr(li, "names"))
+  attr(li, "names") <- sapply(seq_along(attr(li,"names")), function(i){
+                         return(gsub("[0-9]*(_.*)",
+                                     paste0(i,"\\1"),
+                                     attr(li,"names")[i]))
+                       })
+  # clean the elements named 'schemaX' with X a digit
+  li <- li[!grepl("schema[0-9]$",attr(li, "names"))]
+  
+  # remove the nodes containing only '[ comment ]'
+  li <- li[li != "[ comment ]"]
+  
   return(li)
 }
 
@@ -193,19 +246,6 @@ removeRAttributes <- function(li){
   return(li[attr(li,"names") != "R-Attributes"])
 }
 
-# Make the final list a bit more pretty
-prettyList <- function(li, path){
-  
-  # clean the elements named 'schemaX' with X a digit
-  li <- li[!grepl("schema[0-9]$",attr(li, "names"))]
-  if(has_child(li))
-    li[which(sapply(li,
-                    function(ll) identical(ll, list())))] <- path
-  li <- li[li != "[ comment ]"]
-  return(li)
-}
-
-
 
 # --- Utility Functions --- #
 # Some tiny useful tools inserted
@@ -214,13 +254,14 @@ prettyList <- function(li, path){
 # -- General
 
 # @overwrite
+# replace x[ind] with values (values might be a vector)
 replace <- function(x, ind, values){
   if(ind == length(x))
-    x = c(x[-ind], values)
+    x <- c(x[-ind], values)
   else if(ind == 1)
-    x = c(values,x[-1])
+    x <- c(values,x[-1])
   else
-    x = c(x[1:ind-1], values, x[ind+1:length(x)])
+    x <- c(x[1:(ind-1)], values, x[(ind+1):length(x)])
   return(x)
 }
 
