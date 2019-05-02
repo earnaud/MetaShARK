@@ -22,12 +22,13 @@ navTreeUI <- function(id, IM){
   pageWithSidebar(
     headerPanel("Documentation"),
     sidebarPanel(
-      shinyTree(outputId = ns(IM[2]),
-                search = TRUE)
+      shinyTree(outputId = ns(IM[2]), # render tree
+                search = FALSE),
+      style = "word-wrap: break-word;"
     ),
     mainPanel(
-      uiOutput( ns(IM[4]) ),
-      uiOutput( ns(IM[3]) ),
+      uiOutput( ns(IM[4]) ), # XPath
+      uiOutput( ns(IM[3]) ), # Documentation
       style = "word-wrap: break-word;"
     )
   )

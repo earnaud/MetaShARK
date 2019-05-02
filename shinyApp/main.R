@@ -16,8 +16,8 @@ IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath")
 ui <- fluidPage(
   # Styling and other user-friendly settings
   tags$head(
-    tags$style(
-      HTML("
+      tags$style(
+        HTML("
            pre {
               white-space: pre-wrap;
               word-break: keep-all;

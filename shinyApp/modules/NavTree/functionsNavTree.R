@@ -54,6 +54,11 @@ extractContent <- function(content){
     
     return(paste0(out, sep = "<br>"))
   }
+  if(any(grepl("REF",attr(content[["R-Attributes"]],"names")))){
+    return(paste0(tags$b("See also: "),
+                  content[["R-Attributes"]][["REF"]],
+                  "\n"))
+  }
   else {
     return("No content found")
   }
