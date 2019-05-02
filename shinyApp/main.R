@@ -10,7 +10,7 @@ source("modules/NavTree/moduleNavTree.R", chdir = TRUE)
 ### RESOURCES ###
 
 # IM: Id Modules - first: session - last: output id - others: intermediary id
-IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath")
+IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath","navSearch")
 
 ### UI ###
 ui <- fluidPage(
@@ -25,8 +25,10 @@ ui <- fluidPage(
            ")
     )
   ),
-  
-    navTreeUI(IM.navTree[1], IM = IM.navTree)
+  tabsetPanel(
+    tabPanel("Fill", "Nothing yet"),
+    tabPanel("Documentation", navTreeUI(IM.navTree[1], IM = IM.navTree))
+  )
 )
 
 ### SERVER ###
