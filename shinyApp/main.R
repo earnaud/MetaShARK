@@ -5,7 +5,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ### IMPORTS ###
 library(shiny)
 
-source("modules/NavTree/moduleNavTree.R", chdir = TRUE)
+
 
 ### RESOURCES ###
 
@@ -14,15 +14,7 @@ IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath","navSearch"
 
 ### UI ###
 ui <- fluidPage(
-  # Styling and other user-friendly settings
-  tags$head(
-      tags$style(
-        HTML("
-           pre {
-              white-space: pre-wrap;
-              word-break: keep-all;
-           }
-           ")
+
     )
   ),
   tabsetPanel(
@@ -31,13 +23,7 @@ ui <- fluidPage(
   )
 )
 
-### SERVER ###
-server <- function(input,output,session){
-  session$onSessionEnded(stopApp)
-  
-  # modules called
-  output <- callModule(navTree, IM.navTree[1], IM = IM.navTree)
-  
+
 }
 
 ### APP LAUNCH ###
