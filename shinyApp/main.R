@@ -1,38 +1,30 @@
+# main.
+rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+### IMPORTS ###
 library(shiny)
 
-source("./templateApp/templateModule.R")
-source("./templateMetadataInfo/parseMetadataInfo.R")
 
-########## UI ##############
 
+### RESOURCES ###
+
+# IM: Id Modules - first: session - last: output id - others: intermediary id
+IM.navTree = c("navTreeModule", "navTree", "navTreeSelect","navPath","navSearch")
+
+### UI ###
 ui <- fluidPage(
-  # titlePanel("EML Manager"),
-  navbarPage(
-    "EML Manager",
-    navbarMenu("Fill information file",
-      tabPanel("Personnel",
-        inputUi("Personnel", metadataFields = parseMetadataInfo("Personnel"))
-      )
-    ),
-    tabPanel("Generate EML file"
-      # run make_eml
-    ),
-    navbarMenu("Be helped",
-      tabPanel("EML format specifications"
-        # display help and "how to fill information"
-      )
+
     )
+  ),
+  tabsetPanel(
+    tabPanel("Fill", "Nothing yet"),
+    tabPanel("Documentation", navTreeUI(IM.navTree[1], IM = IM.navTree))
   )
 )
 
-######### Server #############
 
-server <- function(input, output, session){
-  output <- callModule(inputServer,"Personnel", 
-                       xmlName = parseMetadataInfo("Personnel")$xmlName)
 }
 
-####### Launch App ###########
-shinyApp(ui=ui, server=server)
+### APP LAUNCH ###
+shinyApp(ui,server)
