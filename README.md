@@ -13,7 +13,7 @@ You can launch the app through the 'main.R' script (shinyApp/main.R). The suppor
 
 ### Required libraries
 
-ARSE require two libraries to perform:
+ARSE require following libraries to perform:
 * [shiny](https://shiny.rstudio.com/)
 * [shinyTree](https://github.com/shinyTree/shinyTree)
 * [shinydashboard](https://github.com/rstudio/shinydashboard)
