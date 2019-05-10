@@ -7,12 +7,13 @@ library(shiny)
 library(shinydashboard)
 
 source("modules/documentation/documentation.R")
+source("modules/fill/fill.R")
 
 ### RESOURCES ###
 
-# IM: Id Modules - first: session - last: output id - others: intermediary id
+# IM: Id Modules - first: session (=module namespace) - others: IDs
 IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
-# IM.doc = c("fillModule", "Fill")
+IM.fill = c("fillModule", "Fill")
 
 ### UI ###
 ui <- dashboardPage(dashboardHeader(title = "MetaShARK"),
@@ -29,7 +30,8 @@ ui <- dashboardPage(dashboardHeader(title = "MetaShARK"),
                     dashboardBody(
                       tabItems(
                         tabItem(tabName = "generate"),
-                        tabItem(tabName = "fill"),
+                        tabItem(tabName = "fill",
+                                fillUI(IM.fill[1], IM = IM.fill)),
                         tabItem(tabName = "documentation",
                                 docUI(IM.doc[1], IM = IM.doc)),
                         tabItem(tabName = "about")
@@ -37,31 +39,15 @@ ui <- dashboardPage(dashboardHeader(title = "MetaShARK"),
                     )
 )
 
-# ui <- fluidPage(
-#   # Styling and other user-friendly settings
-#   tags$head(
-#     tags$style(
-#       HTML("
-#         pre {
-#           white-space: pre-wrap;
-#           word-break: keep-all;
-#         }
-#       ")
-#     )
-#   ),
-#   tabsetPanel(
-#     tabPanel("Fill", "Nothing yet"),
-#     tabPanel("Documentation", )
-#   )
-# )
+
 
 ### SERVER ###
 server <- function(input,output,session){
   session$onSessionEnded(stopApp)
   
   # modules called
-  output <- callModule(documentation, IM.doc[1], IM = IM.doc)
-  # callModule(fill, IM.fill[1], IM = IM.fill)
+  output$doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
+  output$fill <- callModule(fill, IM.fill[1], IM = IM.fill)
 }
 
 ### APP LAUNCH ###
