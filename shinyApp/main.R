@@ -1,13 +1,16 @@
-# main.
+# main.R
 rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ### IMPORTS ###
 library(shiny)
 library(shinydashboard)
+library("shinyjs")
 
 source("modules/documentation/documentation.R")
 source("modules/fill/fill.R")
+
+if(!dir.exists(".cache/")) dir.create(".cache/")
 
 ### RESOURCES ###
 
@@ -19,8 +22,9 @@ IM.fill = c("fillModule", "Fill")
 ui <- dashboardPage(dashboardHeader(title = "MetaShARK"),
                     ## Menus ##
                     dashboardSidebar(
+                      useShinyjs(),
                       sidebarMenu(
-                        menuItem("Generate EML", tabName = "generate", icon = icon("file")),
+                        menuItem("Welcome", tabName = "welcome", icon = icon("home")),
                         menuItem("Fill in EML", tabName = "fill", icon = icon("file-import")),
                         menuItem("EML Documentation", tabName = "documentation", icon = icon("glasses")),
                         menuItem("About MetaShARK", tabName = "about", icon = icon("beer"))
@@ -29,7 +33,7 @@ ui <- dashboardPage(dashboardHeader(title = "MetaShARK"),
                     ## Content ##
                     dashboardBody(
                       tabItems(
-                        tabItem(tabName = "generate"),
+                        tabItem(tabName = "welcome"),
                         tabItem(tabName = "fill",
                                 fillUI(IM.fill[1], IM = IM.fill)),
                         tabItem(tabName = "documentation",
@@ -46,8 +50,9 @@ server <- function(input,output,session){
   session$onSessionEnded(stopApp)
   
   # modules called
-  output$doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
-  output$fill <- callModule(fill, IM.fill[1], IM = IM.fill)
+  doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
+  fill <- callModule(fill, IM.fill[1], IM = IM.fill)
+    fillWelcome <- callModule(fillWelcome, IM.welcome[1], IM = IM.welcome)
 }
 
 ### APP LAUNCH ###
