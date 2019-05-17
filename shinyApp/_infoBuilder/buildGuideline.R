@@ -13,6 +13,7 @@ library(data.tree)
 
 ### imports ###
 source("xsdExplorer.R")
+source("../utils/multiApply.R")
 
 
 
@@ -32,7 +33,7 @@ source("xsdExplorer.R")
              , "complexType:"
              , "simpleContent:"
              , "element:"
-             , "group:"
+             , "group:[a-zA-Z0-9]{4,}"
              , gsub("xsdFiles/","", gsub("\\.xsd","",files))
              )
   cat(round(Sys.time() - start.time, 1),"s.\n"); start.time = Sys.time()
@@ -78,12 +79,8 @@ cat("Producing the guidelines:\n")
   ## Fill guideline ##
   {
     cat("* Fill guideline: ")
-    fillList <- buildFillList(li = backboneList, 
-                              focus=focus, 
-                              filter = filter[-which(filter %in% c("simpleType:","simpleContent:","element:"))])
+    fillList <- buildFillList(li = backboneList)
     saveRDS(fillList, "../resources/fillGuideline.RData")
-    minFillList <- buildMinFillList(fillList)
-    write.table(minFillList, "../resources/minFillGuideline.tsv", row.names = TRUE)
     cat(round(Sys.time() - start.time, 1),"s.\n")
   }
 }

@@ -7,6 +7,7 @@
 
 source("guidelinesFunctions.R")
 source("multiApply.R")
+source("../utils/followPath.R")
 
 # Build full hierarchy 
 buildSystemList <- function(files, focus)
@@ -92,65 +93,10 @@ buildDocList <- function(li, filter)
 # Build user-legible tree for documentation purpose
 buildFillList <- function(li, focus, filter)
 { 
-  # Pruning
-  mi <- as.Node(li)
-  Prune(mi,
-        function(node){
-          return(tree.find(node,
-                           filter))
-        })
-  fillList <- as.list(mi)[-1]
-  
-  # prepare recursion
-  toApplyFUNS = list(
-    "removeTypedElements",# remove 'typed' elements
-    "flatten",            # remove non-UF elements
-    "prettyList",         # make names user-legible
-    "removeRAttributes"   # remove R-Attributes (= XML attributes translated in R)
-  )
-  
-  toApplyARGS = list(
-    list(NA),
-    list(filter = filter),
-    list(path = quote(path)),
-    list(NA)
-  )
-  
-  # apply recursion
-  fillList <- multiApply(fillList, 
-                        FUNS = toApplyFUNS,
-                        ARGS = toApplyARGS,
-                        setPath = FALSE)
+ 
+  browser()
   
   return(fillList)
-}
-
-# Build minimized Fill list
-buildMinFillList <- function(li)
-{
-  # Get path and abreviated items
-  minFillList <- unlist(li)[grepl("complexType|group",unlist(li))]
-  path = minFillList[!grepl(":(res|ent)", minFillList)]
-  abrev = gsub("^.*(complexType|group):([a-zA-Z]*)",
-               "\\2",
-               path)
-  minFillList <- data.frame(
-    path = as.character(path),
-    abrev = as.character(abrev),
-    stringsAsFactors = FALSE
-  )
-  minFillList <- minFillList[order(minFillList$abrev),]
-  
-  # make unique the 'abrev' items
-  sapply(unique(minFillList$abrev),
-         function(name, tab){
-           if(tab[name] > 1){
-             ind <- which(minFillList$abrev == name)
-             minFillList$abrev[ind] <<- paste0(name," (",1:length(ind),")")
-             }
-           }, tab = table(minFillList$abrev)
-         )
-  return(minFillList)
 }
 
 
