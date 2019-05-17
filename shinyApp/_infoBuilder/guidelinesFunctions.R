@@ -302,6 +302,6 @@ require(data.tree)
 # does an element exist in childhood
 tree.find = function(node, focus.vec){
   if(is.list(node)) node <- as.Node(node)
-  elements <- Traverse(node, filterFun = function(node) any(sapply(focus.vec, function(f) grepl(f,node$name))))
+  elements <- Traverse(node, filterFun = function(node) any(sapply(focus.vec, function(f) grepl(f,node$name, perl = TRUE))))
   return(length(elements) > 0)
 }
