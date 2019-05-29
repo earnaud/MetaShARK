@@ -4,7 +4,6 @@
 # on their official git (https://github.com/NCEAS/eml) on 2019/02/25
 
 # IMPORTS
-
 source("guidelinesFunctions.R")
 source("multiApply.R")
 source("../utils/followPath.R")
@@ -94,9 +93,9 @@ buildDocList <- function(li, filter)
 buildFillList <- function(li, focus, filter)
 { 
  
-  browser()
+  # browser()
   
-  return(fillList)
+  return(li)
 }
 
 

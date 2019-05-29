@@ -1,8 +1,6 @@
 ### buildGuidelines.R ###
-rm(list=ls())
 start.time <- Sys.time()
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
+cat("BUILDING GUIDELINES\n")
 
 
 ### libraries ###
@@ -47,42 +45,44 @@ cat("Producing the guidelines:\n")
 
 {
   ## system guideline ##
-  if(!file.exists( "../resources/systemGuideline.RData"))
+  # if(!file.exists( "../resources/systemGuideline.RData"))
   {
     cat("* System guideline: ")
     systemList = buildSystemList(files, focus)
     saveRDS(systemList, "../resources/systemGuideline.RData")
     cat(round(Sys.time() - start.time, 1),"s.\n"); start.time = Sys.time()
   }
-  else systemList <- readRDS("../resources/systemGuideline.RData")
+  # else systemList <- readRDS("../resources/systemGuideline.RData")
 
   ## Backbone guideline ##
-  if(!file.exists( "../resources/backboneGuideline.RData"))
+  # if(!file.exists( "../resources/backboneGuideline.RData"))
   {
     cat("* Backbone guideline: ")
     backboneList <- buildBackboneList(li = systemList, focus=focus)
     saveRDS(backboneList, "../resources/backboneGuideline.RData")
     cat(round(Sys.time() - start.time, 1),"s.\n")
   }
-  else backboneList <- readRDS("../resources/systemGuideline.RData")
+  # else backboneList <- readRDS("../resources/backboneGuideline.RData")
   
   ## Doc guideline ##
-  if(!file.exists( "../resources/docGuideline.RData"))
+  # if(!file.exists( "../resources/docGuideline.RData"))
   {
     cat("* Doc guideline: ")
     docList <- buildDocList(li = backboneList, filter = filter)
     saveRDS(docList, "../resources/docGuideline.RData")
     cat(round(Sys.time() - start.time, 1),"s.\n"); start.time = Sys.time()
   }
-  else docList <- readRDS("../resources/systemGuideline.RData")
+  # else docList <- readRDS("../resources/docGuideline.RData")
   
-  ## Fill guideline ##
-  {
-    cat("* Fill guideline: ")
-    fillList <- buildFillList(li = backboneList)
-    saveRDS(fillList, "../resources/fillGuideline.RData")
-    cat(round(Sys.time() - start.time, 1),"s.\n")
-  }
+  # ## Fill guideline ##
+  # if(!file.exists( "../resources/fillGuideline.RData"))
+  # {
+  #   cat("* Fill guideline: ")
+  #   fillList <- buildFillList(li = backboneList)
+  #   saveRDS(fillList, "../resources/fillGuideline.RData")
+  #   cat(round(Sys.time() - start.time, 1),"s.\n"); start.time = Sys.time()
+  # }
+  # else docList <- readRDS("../resources/fillGuideline.RData")
 }
 
 rm(list = ls())
