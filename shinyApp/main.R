@@ -3,6 +3,8 @@ rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 options(shiny.reactlog=TRUE)
 
+
+
 ### IMPORTS ###
 library(shiny)
 library(shinydashboard)
@@ -15,6 +17,7 @@ source("modules/welcome/welcome.R")
 if(!dir.exists(".cache/")) dir.create(".cache/")
 
 ### RESOURCES ###
+ns.index <- readRDS("resources/nsIndex.RData")
 
 # IM: Id Modules - first: session (=module namespace) - others: IDs
 IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
