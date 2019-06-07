@@ -1,16 +1,20 @@
 # fill.R
 
 ### IMPORTS ###
-cat("* Loading Fill Guidelines: \n")
-fillGuideline = as.list(readRDS("resources/fillGuideline.RData"))
-cat("** Fill Guideline successfully loaded !\n")
+library(EML)
+source("modules/fill/EMLAL/EMLAL.R")
+
+
+### RESOURCES ###
+IM.EMLAL = c("EMLALModule","EML Assembly Line")
 
 ### UI ###
 fillUI <- function(id, IM){
   ns <- NS(id)
   
-  fluidPage(
-    h1("under construction")
+  tabsetPanel(id = ns("tabs"),
+    tabPanel(IM.EMLAL[2], EMLALUI(IM.EMLAL[1], IM.EMLAL)),
+    tabPanel("MetaFIN", h1("Under Construction"))
   )
   
 }
@@ -19,6 +23,5 @@ fillUI <- function(id, IM){
 
 ### SERVER ###
 fill <- function(input, output, session, IM){
-  ns <- session$ns
   
 }

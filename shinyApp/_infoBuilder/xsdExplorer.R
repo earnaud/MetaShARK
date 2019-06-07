@@ -70,7 +70,8 @@ buildDocList <- function(li, filter)
     "removeTypedElements",# remove 'typed' elements
     "flatten",            # remove non-UF elements
     "prettyList",         # make names user-legible
-    "removeRAttributes"   # remove R-Attributes (= XML attributes translated in R)
+    "removeRAttributes"  # remove R-Attributes (= XML attributes translated in R)
+    # "adaptUnique"
   )
   
   toApplyARGS = list(
@@ -78,6 +79,7 @@ buildDocList <- function(li, filter)
     list(filter = filter),
     list(path = quote(path)),
     list(NA)
+    # list(NA)
   )
   
   # apply recursion

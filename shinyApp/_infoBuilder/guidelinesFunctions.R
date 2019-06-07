@@ -237,15 +237,23 @@ prettyList <- function(li, path){
 }
 
 # # Ensure there are no resting 'R-Attributes' (except if containing TYPE) list at the end of a recursion
+# Update: ensure that no duplicates subsist
 removeRAttributes <- function(li){
   if(!has_child(li))
     return(li)
-  
   if(!isFound("R-Attributes", attr(li,"names")))
     return(li)
-  return(li[attr(li,"names") != "R-Attributes"])
+  
+  return(unique(li[attr(li,"names") != "R-Attributes"]))
 }
 
+# # adapt unique()
+# adaptUnique <- function(li){
+#   if(!has_child(li))
+#     return(li)
+#   
+#   return(li[unique(names(li))])
+# } 
 
 # --- Utility Functions --- #
 # Some tiny useful tools inserted
