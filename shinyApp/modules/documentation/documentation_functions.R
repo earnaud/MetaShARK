@@ -7,9 +7,36 @@ extractContent <- function(content){
   # modules annotation is stored in 'eml-module/schema'
   if(any(grepl("schema", attr(content,"names"))))
     content <- content[[which(grepl("schema",attr(content,"names")))]]
+  
+  # Extract metadata content from Attributes
+  att <- content$`R-Attributes`
+  att.out <- c()
+  if(any(grepl("TYPE", names(att)))){
+    att.type <- nsIndex[sapply(names(nsIndex), grepl, att["TYPE"])]
+    if(length(att.type) == 0) att.type <- "this module"
+    att.out <- c( att.out,
+                  paste(as.character(tags$b("Cf.")), 
+                        gsub("^.*:","",att["TYPE"]),
+                        "in",
+                        gsub(".*org/([a-zA-Z ]+)-2.1.1$","eml-\\1",att.type)) )
+  }
+  if(any(grepl("REF", names(att)))){
+    att.ref <- paste0(tags$b("See also: "),
+                      content[["R-Attributes"]][["REF"]],
+                      "\n")
+    att.out <- c( att.out,
+                  att.ref)
+  }
+  
+  if(length(att) == 0) browser()
+  att <- att.out
+  
+  # Documentation content
   if(any(grepl("annotation", attr(content,"names")))){
     
     ## content
+    
+    # Extract metadata content from main body
     out <- unlist(content[grepl("annotation", attr(content, "names"))])
     # preprocess 'ulink' tags that require their URL attributes (R-Attributes needed)
     {
@@ -19,6 +46,7 @@ extractContent <- function(content){
                                                                  out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 2] ], # URL
                                                                  sep = "[RECOGNIZED]")
     }
+
     out <- out[!grepl("R-Attributes", attr(out, "names"))]
     out <- sapply(out, gsub,  pattern = " +", replacement = " ")
     
@@ -51,16 +79,14 @@ extractContent <- function(content){
                                    out[o],
                                    sep = "\n"))
                   })
-    
+    out <- paste(c(att, out), collapse = "<br>")
     return(paste0(out, sep = "<br>"))
   }
-  if(any(grepl("REF",attr(content[["R-Attributes"]],"names")))){
-    return(paste0(tags$b("See also: "),
-                  content[["R-Attributes"]][["REF"]],
-                  "\n"))
+  else if(length(att) == 0) {
+    return("No content found")
   }
   else {
-    return("No content found")
+    return(paste(att, collapse = "<br>"))
   }
 }
 
@@ -122,7 +148,7 @@ nt.titles <- function(vec, action_target){
                  ))
                
                if(target == "p")
-                 vec[targeted] <- p(vec[targeted])
+                 vec[targeted] <- sapply(vec[targeted], p)
              }
              
              if(action == "addurl"){
@@ -159,7 +185,6 @@ commonPath <- function(li,name){
     length(which(path[1:minLength] == paths[[1]][1:minLength]))
   }))
   common <- paste(paths[[1]][1:minInd], collapse = "/")
-  # browser()
   common <- gsub(paste0("(",
                         gsub("(.*_| )",
                              "",
