@@ -17,6 +17,7 @@ ARSE require following libraries to perform:
 * [shiny](https://shiny.rstudio.com/)
 * [shinyTree](https://github.com/shinyTree/shinyTree)
 * [shinydashboard](https://github.com/rstudio/shinydashboard)
+* [shinyjs](https://deanattali.com/shinyjs/)
 
 ## Releases
 
