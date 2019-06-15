@@ -71,7 +71,8 @@ server <- function(input,output,session){
   welcome <- callModule(welcome, IM.welcome[1], IM = IM.welcome)
   # fill
   fill <- callModule(fill, IM.fill[1], IM = IM.fill)
-  fill.emlal <- callModule(EMLAL, IM.EMLAL[1], IM = IM.EMLAL)
+    fill.emlal <- callModule(EMLAL, IM.EMLAL[1], IM = IM.EMLAL)
+      fill.emlal.selectDP <- callModule(selectDP, IM.EMLAL[1], IM = IM.EMLAL)
   # doc
   doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
   

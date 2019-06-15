@@ -4,6 +4,13 @@
 library(devtools)
 library(EMLassemblyline)
 
+source("modules/fill/EMLAL/EMLAL_selectDP.R")
+
+### RESOURCES ###
+DP.path <- "dataPackagesOutput/emlAssemblyLine/"  ; dir.create(DP.path, recursive = TRUE, showWarnings = FALSE)
+
+# Derived Id Modules from IM.EMLAL by pasting the step number (https://ediorg.github.io/EMLassemblyline/articles/overview.html)
+
 ### UI ###
 EMLALUI <- function(id, IM){
   ns <- NS(id)
@@ -15,8 +22,9 @@ EMLALUI <- function(id, IM){
   step = steps[[1]]
   
   fluidPage(
-    div(
-      h2("Authorship"),
+    style="padding-top:2.5%;",
+    box(
+      title = "Authorship",
       HTML(
         "<p>The `EML Assembly Line` package used in this module
         and its children is the intellectual property of the
@@ -25,15 +33,14 @@ EMLALUI <- function(id, IM){
         <a href=https://github.com/EDIorg/EMLassemblyline>git repository</a>.</p>"
       )
     ),
-    div(
-      h2("How to use"),
+    box(
+      title = "How to use",
       HTML(
         "<p>You can find a summary of the way the tool work on 
         <a href=https://ediorg.github.io/EMLassemblyline/articles/overview.html>this page</a>.</p>"
       )
     ),
-    # Variable output
-    uiOutput("step")
+    uiOutput(ns("EMLALUI"))
   )
 }
 
@@ -43,7 +50,14 @@ EMLALUI <- function(id, IM){
 EMLAL <- function(input, output, session, IM){
   ns <- session$ns
   
-  output$step <- renderUI(div("ok"))
+  # reactive values
+  step <- "select"
+  
+  # Output
+  output$EMLALUI <- switch(step,
+                           select = renderUI({ selectDPUI(id = IM.EMLAL[1], title = step, DP.path = DP.path, IM = IM.EMLAL) })
+                           )
+  
 }
 
 
