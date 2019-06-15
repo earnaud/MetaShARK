@@ -18,6 +18,7 @@ ARSE require following libraries to perform:
 * [shinyTree](https://github.com/shinyTree/shinyTree)
 * [shinydashboard](https://github.com/rstudio/shinydashboard)
 * [shinyjs](https://deanattali.com/shinyjs/)
+* [EMLassemblyline](https://github.com/EDIorg/EMLassemblyline) for the corresponding `Fill in` module
 
 ## Releases
 
