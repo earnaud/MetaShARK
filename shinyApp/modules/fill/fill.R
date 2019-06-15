@@ -2,8 +2,8 @@
 
 ### IMPORTS ###
 library(EML)
-source("modules/fill/EMLAL/EMLAL.R")
 
+source("modules/fill/EMLAL/EMLAL.R")
 
 ### RESOURCES ###
 IM.EMLAL = c("EMLALModule","EML Assembly Line")
