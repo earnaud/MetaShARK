@@ -18,7 +18,6 @@ source("modules/welcome/welcome.R")
 if(!dir.exists(".cache/")) dir.create(".cache/")
 
 ### RESOURCES ###
-ns.index <- readRDS("resources/nsIndex.RData")
 
 # IM: Id Modules - first: session (=module namespace) - others: IDs
 IM.about = c("aboutModule", "About")
@@ -72,9 +71,10 @@ server <- function(input,output,session){
   # fill
   fill <- callModule(fill, IM.fill[1], IM = IM.fill)
     fill.emlal <- callModule(EMLAL, IM.EMLAL[1], IM = IM.EMLAL)
-      fill.emlal.selectDP <- callModule(selectDP, IM.EMLAL[1], IM = IM.EMLAL)
+      fill.emlal.selectDP <- callModule(selectDP, IM.EMLAL[1], IM = IM.EMLAL, DP.path = DP.path)
+      fill.emlal.createDP <- callModule(createDP, IM.EMLAL[1], IM = IM.EMLAL)
   # doc
-  doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
+  doc <- callModule(documentation, IM.doc[1], IM = IM.doc, nsIndex = nsIndex)
   
   ## Common UI elements
   output$logo <- renderImage({ list(src = "resources/pictures/MetaShARK_icon2.png",
