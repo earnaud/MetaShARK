@@ -17,9 +17,10 @@ cat("* Loading System Guideline ...\r")
 systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
 cat("* System Guideline successfully loaded !\n")
 
-cat("* Loading Namespaces Index ...\r")
-nsIndex <- readRDS("resources/nsIndex.RData")
-cat("* Namespaces Index successfully loaded !\n")
+cat("Loading Namespaces Index ...\r")
+nsIndex = readRDS("resources/nsIndex.RData")
+cat("Namespaces Index successfully loaded !\n")
+
 
 # UI functions
 docUI <- function(id, IM){
@@ -50,7 +51,7 @@ docUI <- function(id, IM){
 
 
 # Server functions
-documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex){
+documentation <- function(input, output, session, IM, nsIndex = nsIndex, tree = docGuideline){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)
