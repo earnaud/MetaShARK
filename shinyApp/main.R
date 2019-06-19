@@ -72,7 +72,7 @@ server <- function(input,output,session){
   fill <- callModule(fill, IM.fill[1], IM = IM.fill)
     fill.emlal <- callModule(EMLAL, IM.EMLAL[1], IM = IM.EMLAL)
       fill.emlal.selectDP <- callModule(selectDP, IM.EMLAL[1], IM = IM.EMLAL, DP.path = DP.path)
-      fill.emlal.createDP <- callModule(createDP, IM.EMLAL[1], IM = IM.EMLAL)
+  
   # doc
   doc <- callModule(documentation, IM.doc[1], IM = IM.doc, nsIndex = nsIndex)
   
