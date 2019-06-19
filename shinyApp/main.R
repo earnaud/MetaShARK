@@ -74,7 +74,7 @@ server <- function(input,output,session){
       fill.emlal.selectDP <- callModule(selectDP, IM.EMLAL[1], IM = IM.EMLAL, DP.path = DP.path)
   
   # doc
-  doc <- callModule(documentation, IM.doc[1], IM = IM.doc, nsIndex = nsIndex)
+  doc <- callModule(documentation, IM.doc[1], IM = IM.doc)
   
   ## Common UI elements
   output$logo <- renderImage({ list(src = "resources/pictures/MetaShARK_icon2.png",
