@@ -50,7 +50,7 @@ docUI <- function(id, IM){
 
 
 # Server functions
-documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex = nsIndex){
+documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)
