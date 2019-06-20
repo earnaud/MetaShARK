@@ -3,7 +3,7 @@
 # --- UI display
 
 # extracts the targetted EML content from a list
-extractContent <- function(content){
+extractContent <- function(content, nsIndex){
   # modules annotation is stored in 'eml-module/schema'
   if(any(grepl("schema", attr(content,"names"))))
     content <- content[[which(grepl("schema",attr(content,"names")))]]

@@ -14,6 +14,9 @@ cat("* Doc Guideline successfully loaded !\n")
 cat("* Loading System Guideline ...\r")
 systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
 cat("* System Guideline successfully loaded !\n")
+cat("* Loading Namespaces Index ...\r")
+nsIndex = as.list(readRDS("resources/nsIndex.RData"))
+cat("* Namespaces Index successfully loaded !\n")
 
 # UI functions
 docUI <- function(id, IM){
@@ -44,7 +47,7 @@ docUI <- function(id, IM){
 
 
 # Server functions
-documentation <- function(input, output, session, IM, tree = docGuideline){
+documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)
@@ -75,7 +78,7 @@ documentation <- function(input, output, session, IM, tree = docGuideline){
       
       # fetch the eml-xsd content in the systemGuideLine list
       systemContent <- followPath(systemGuideline, systemPath)
-      out <- extractContent(systemContent)
+      out <- extractContent(systemContent, nsIndex)
       return(out)
     }
   })
