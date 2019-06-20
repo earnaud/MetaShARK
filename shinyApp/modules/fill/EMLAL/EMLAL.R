@@ -32,14 +32,28 @@ EMLALUI <- function(id, IM){
         and its children is the intellectual property of the
         Environment Data Initiative (EDI). You can find further
         details on their 
-        <a href=https://github.com/EDIorg/EMLassemblyline>git repository</a>.</p>"
+        <a href=https://github.com/EDIorg/EMLassemblyline>git repository</a>.</p>
+        <img src=\"resources/pictures/EDI-logo.png\" 
+             alt=\"EDI logo\"
+             style=\"width:100px; height:100px\" />"
       )
     ),
     box(
       title = "How to use",
       HTML(
-        "<p>You can find a summary of the way the tool work on 
-        <a href=https://ediorg.github.io/EMLassemblyline/articles/overview.html>this page</a>.</p>"
+        "<p><b>EMLassemblyline</b> is a metadata builder for scientists
+        and data managers who need to easily create high quality 
+        <b>EML</b> metadata for data publication. It emphasizes 
+        auto-extraction of metadata, appends value added content, 
+        and accepts user supplied inputs through template files 
+        thereby minimizing user effort while maximizing the potential
+        of future data discovery and reuse. EMLassemblyline requires 
+        no familiarity with EML, is great for managing 10-100s of 
+        data packages, accepts all data formats, and supports complex
+        and fully reproducible science workflows. Furthermore, it 
+        incorporates <a href=\"https://environmentaldatainitiative.files.wordpress.com/2017/11/emlbestpractices-v3.pdf\">EML best practices</a>,
+        is based on a simple file organization scheme, and is not tied to a specific data repository.</p>
+        <i>(preface by Colin Smith, EDI)</i>"
       )
     ),
     tabBox(
