@@ -24,44 +24,57 @@ selectDPUI <- function(id, title, width=12, IM, DP.path){
           column(floor(width/2),
                 h4("Create new data package",
                     style="text-align:center"),
-                # DP name
-                textInput(ns("dp.name"),
-                          "Enter a data package name:",
-                          placeholder=paste0("eml.datapackage.",
-                                            Sys.Date())),
-                # DP location
-                actionButton(ns("dp.dir.browse"), "Browse ..."),
-                div(id = ns("dp.dir.choose"),
-                    tags$b("Currently selected folder:"),
-                    br(),
-                    textOutput(ns("dp.dir.choose")), 
-                    style = "white-space: nowrap;
+                # DP input
+                div(id="dp.input", 
+                    style="border: 1px solid lightgrey;
+                    margin: 5px;
+                    padding: 5px;
+                    width: 100%;",
+                    # DP name
+                    textInput(ns("dp.name"),
+                              "Enter a data package name:",
+                              placeholder=paste0("eml.datapackage.",
+                                                 Sys.Date())),
+                    # DP location
+                    tags$b("Select a data package directory output:"),
+                    actionButton(ns("dp.dir.browse"), "Browse ..."),
+                    div(id = ns("dp.dir.choose"),
+                        tags$b("Currently selected folder:"),
+                        br(),
+                        textOutput(ns("dp.dir.choose")), 
+                        style = "white-space: nowrap;
                             text-overflow: ellipsis;
                             overflow: hidden;"
+                    )
+                  ),
+                # Data input
+                div(id="data.input", 
+                    style="border: 1px solid lightgrey;
+                    margin: 5px;
+                    padding: 5px;
+                    width: 100%;",
+                  # Data files
+                  fileInput(ns("data.files.browse"), 
+                            "Select your data files (make sure they are in the same directory)",
+                            TRUE),
+                  div(tags$b("Currently selected data files:"),
+                      tableOutput(ns("data.files.choose")),
+                      style = "white-space: nowrap;
+                               text-overflow: ellipsis;
+                               overflow: hidden;"
+                  ),
+                  # License choice
+                  selectInput("data.license", "Select a license of the dataset intellectual rights",
+                              c("CC BY","CC0"))
                 ),
-                # Data files
-                
-                fileInput(ns("data.files.browse"), 
-                          "Select your data files (make sure they are in the same directory)",
-                          multiple = TRUE),
-                div(id = ns("data.files.choose"),
-                    tags$b("Currently selected data files:"),
-                    br(),
-                    textOutput(ns("data.files.choose")), 
-                    style = "white-space: nowrap;
-                             text-overflow: ellipsis;
-                             overflow: hidden;"
-                ),
-                # License choice
-                HTML("</br>"),
                 # DP creation
                 conditionalPanel(
-                  condition = "input.dp.name != '' || !/^[a-zA-Z0-9_-.]+$/.exec(input.dp.name) || !input.data.files.choose",
+                  condition = "output.toggle_create_button",
                   actionButton(ns("create-button"),"Create")
                 ),
                 # Warnings
                 conditionalPanel(
-                  condition = "output.warnings.duplicata",
+                  condition = "output.warnings_duplicata",
                   div(style="color:red;",
                       span("WARNING: such a data package already exists (same name, same location).",br(),
                            "Clicking 'Create' will replace all its content. (located in: ",
@@ -75,61 +88,50 @@ selectDPUI <- function(id, title, width=12, IM, DP.path){
 }
 
 selectDP <- function(input, output, session, IM, DP.path){
-  ns <- session$ns
-  outvar = list()
+  outvar = reactiveValues()
   
   # select DP name
-  output$dp.name <- renderText({ input$dp.name })
+  outvar$dp.name <- reactive({input$dp.name})
+  output$dp.name <- renderText({ outvar$dp.name })
   
   # select DP directory
-  output$dp.dir.choose <- outvar$dp.dir.choose <- renderText({ DP.path })
+  output$dp.dir.choose <- renderText({ DP.path })
   
   observeEvent(input$dp.dir.browse, {
-    outvar$dp.dir.choose <-renderText({
-      chooseDirectory()
-    })
-    if(is.na(outvar$dp.dir.choose)) outvar$dp.dir.choose <- renderText({DP.path})
+    outvar$dp.dir.choose <- chooseDirectory()
+    if(is.na(outvar$dp.dir.choose))
+      outvar$dp.dir.choose <- renderText({ DP.path })
     output$dp.dir.choose <- outvar$dp.dir.choose
   })
   
   # select Data files
-  output$data.files.choose <- outvar$data.files.choose <- renderText({ NULL })
-  
-  observeEvent(input$data.files.browse, {
-    outvar$data.files.choose <- renderText({
-      chooseDirectory()
-    })
-    if(is.na(outvar$data.files.choose)) outvar$data.files.choose <- renderText({ NULL })
-    output$data.files.choose <- outvar$data.files.choose
+  outvar$data.files.choose <- reactive({
+    ifelse(is.null(input$data.files.browse),
+           return(data.frame(NULL)),
+           return(input$data.files.browse))
+      
   })
   
-  # reveal buttons
-  output$warnings.duplicata <- renderText({
-    as.character(dir.exists(paste0(outvar$dp.dir.choose(), input$dp.name)) && nzchar(input$dp.name))
+  output$data.files.choose <- renderTable({
+    return( outvar$data.files.choose() )
   })
-  outputOptions(output, "warnings.duplicata", suspendWhenHidden = FALSE)
+
+  ## Toggles
+  # reveal create-button if
+  # - 
+  output$toggle_create_button <- renderText({
+    r2js.boolean(outvar$dp.name != ''
+                 || !grepl("^[:alnum:_\\.-]+$", outvar$dp.name)
+                 || !is.null(outvar$data.files.choose)
+                 )
+  })
   
-  
-  
-  # observeEvent(input$dp.name, {
-  #   DP.location <- outvar$dp.dir.choose()
-  #   DP.name <- input$dp.name
-  #   data.location <- outvar$data.files.choose()
-  #   
-  #   if(is.null(DP.name)
-  #      || !grepl("^[a-zA-Z0-9_\\-\\.]+$", DP.name)
-  #      || is.null( outvar$data.files.choose() )){
-  #     shinyjs::hide("create-button")
-  #     shinyjs::hide("create-warning-duplicated")
-  #     hideTab("main", "create-tab")
-  #   } else {
-  #     shinyjs::show("create-button")
-  #     # as.character()
-  #     if(dir.exists(paste0(DP.location,DP.name))
-  #        && nzchar(DP.name))
-  #       shinyjs::show("create-warning-duplicated")
-  #   }
-  # })
+  # reveal warning if:
+  # - not such a directory exists BUT there is at least a directory name given
+  output$warnings_duplicata <- renderText({
+    r2js.boolean(dir.exists(paste0(outvar$dp.dir.choose, input$dp.name)) && !is.null(input$dp.name))
+  })
+  outputOptions(output, "warnings_duplicata", suspendWhenHidden = FALSE)
  
   # on click on create-button
   observeEvent(input[["create-button"]], {

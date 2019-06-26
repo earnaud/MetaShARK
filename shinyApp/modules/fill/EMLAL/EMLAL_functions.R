@@ -1,6 +1,6 @@
 # EMLAL.R
 
-# other functions
+# choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {
   if (exists('utils::choose.dir')) {
     choose.dir(caption = caption) 
@@ -25,4 +25,10 @@ createDPFolder <- function(DP.location, DP.name, data.location){
     path = DP.location, 
     dir.name = DP.name
   )
+}
+
+# R to JS boolean
+r2js.boolean <- function(condition){
+  if(is.character(condition)) condition = as.logical(condition)
+  return(tolower(as.character(condition)))
 }
