@@ -14,11 +14,11 @@ The naming convention is inspired by the [Python naming convention](https://www.
 **functions**
 *longFunction*	functions are named in lowercase letters 'camelCase'. Referencing a function is done as follow: `function()` (with "`").
 
-**files**
-*aScript.R*	scripts are named in lowercase letters 'camelCase'.
-*aFolder*	folders are named in lowercase letters 'camelCase'.
-*DOC.md*	(re-)user-end documents are named in capital letters.
-*resource.png*	other files are named in lowercase. Words are separated with "\_" for replace spaces and "\_" for separating themes.
+**files**  
+*aScript.R*	scripts are named in lowercase letters 'camelCase'.  
+*aFolder*	folders are named in lowercase letters 'camelCase'.  
+*DOC.md*	(re-)user-end documents are named in capital letters.  
+*resource-image_date.png*	other files are named in lowercase. Words are separated with "-" for replace spaces and "\_" for separating themes.  
 
 **R Shiny IDs**
 *namespace*	namespaces are named within a vector, as the first element. Each vector corresponds to a module, structured as follow:
