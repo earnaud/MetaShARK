@@ -1,7 +1,5 @@
 # documentation_functions.R
 
-# --- UI display
-
 # extracts the targetted EML content from a list
 extractContent <- function(content, nsIndex){
   # modules annotation is stored in 'eml-module/schema'

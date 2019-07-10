@@ -1,14 +1,5 @@
 # fill.R
 
-### IMPORTS ###
-library(EML)
-
-source("modules/fill/EMLAL/EMLAL.R")
-
-### RESOURCES ###
-IM.EMLAL = c("EMLALModule","EML Assembly Line",
-             "select","create","edit","make","publish")
-
 ### UI ###
 fillUI <- function(id, IM){
   ns <- NS(id)

@@ -1,11 +1,6 @@
-# EMLAL_functions.R
+# EMLAL_create.R
 
-### IMPORTS ###
-library("tcltk2")
-
-### UI OUTPUTS ###
-
-## 0. SELECT DATA PACKAGE
+## 2. CREATE DATA PACKAGE
 createDPUI <- function(id, title, IM, testArgs){
   ns <- NS(id)
   

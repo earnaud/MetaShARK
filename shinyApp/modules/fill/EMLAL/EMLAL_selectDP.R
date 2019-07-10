@@ -1,8 +1,5 @@
 # EMLAL_functions.R
 
-### IMPORTS ###
-library("tcltk2")
-
 ### UI ###
 selectDPUI <- function(id, title, width=12, IM, DP.path){
   ns <- NS(id)
@@ -12,75 +9,92 @@ selectDPUI <- function(id, title, width=12, IM, DP.path){
     DP.list <- "Sorry, yet no data package has been saved in this location"
   else
     DP.list <- list.files(DP.path)
-
+  
+  # UI output
   return(
       fluidPage(
         title = "1. Organize data packages",
         fluidRow(
-          column(ceiling(width/2),
+          column(ceiling(width/3),
                  h4("Edit existing data package",
                     style="text-align:center"),
                  DP.list),
-          column(floor(width/2),
-                h4("Create new data package",
-                    style="text-align:center"),
-                # DP input
-                div(id="dp.input", 
-                    style="border: 1px solid lightgrey;
-                    margin: 5px;
-                    padding: 5px;
-                    width: 100%;",
-                    # DP name
-                    textInput(ns("dp.name"),
-                              "Enter a data package name:",
-                              placeholder=paste0("eml.datapackage.",
-                                                 Sys.Date())),
-                    # DP location
-                    tags$b("Select a data package directory output:"),
-                    actionButton(ns("dp.dir.browse"), "Browse ..."),
-                    div(id = ns("dp.dir.choose"),
-                        tags$b("Currently selected folder:"),
-                        br(),
-                        textOutput(ns("dp.dir.choose")), 
-                        style = "white-space: nowrap;
-                            text-overflow: ellipsis;
-                            overflow: hidden;"
-                    )
-                  ),
-                # Data input
-                div(id="data.input", 
-                    style="border: 1px solid lightgrey;
-                    margin: 5px;
-                    padding: 5px;
-                    width: 100%;",
-                  # Data files
-                  fileInput(ns("data.files.browse"), 
-                            "Select your data files (make sure they are in the same directory)",
-                            TRUE),
-                  div(tags$b("Currently selected data files:"),
-                      tableOutput(ns("data.files.choose")),
-                      style = "white-space: nowrap;
-                               text-overflow: ellipsis;
-                               overflow: hidden;"
-                  ),
-                  # License choice
-                  selectInput("data.license", "Select a license of the dataset intellectual rights",
-                              c("CC BY","CC0"))
-                ),
-                # DP creation
-                conditionalPanel(
-                  condition = "output.toggle_create_button",
-                  actionButton(ns("create-button"),"Create")
-                ),
-                # Warnings
-                conditionalPanel(
-                  condition = "output.warnings_duplicata",
-                  div(style="color:red;",
-                      span("WARNING: such a data package already exists (same name, same location).",br(),
-                           "Clicking 'Create' will replace all its content. (located in: ",
-                           textOutput(ns("dp.dir.choose"), inline = TRUE), textOutput(ns("dp.name"), inline = TRUE),")")
-                  )
-                )
+          column(floor(2*width/3),
+            h4("Create new data package",
+               style="text-align:center"),
+            inputRow(
+              id = ns("dp_name"),
+              input_fun = textInput,
+              input_args = list(label = "Data package name:",
+                                placeholder = paste0("eml.datapackage.",
+                                                     Sys.Date()))
+            ),
+            inputRow(
+              id = ns("data_files"),
+              input_fun = fileInput,
+              input_args = list(label = "Select dataset files:",
+                                buttonLabel = "Browse ...",
+                                multiple = TRUE)
+            ),
+            inputRow(
+              id = ns("license"),
+              input_fun = selectInput,
+              input_args = list(label = "Select a license:",
+                                choices = c("CC BY","CC0"))
+            )
+            #----
+            # inputRow(
+            #   # DP name
+            #   textInput(ns("dp_name_in"),
+            #             "Enter a data package name:",
+            #             placeholder=paste0("eml.datapackage.",
+            #                                Sys.Date())),
+            #   textOutput(ns("dp_name_out"))
+            # ),
+            # inputRow(
+            #   # DP location
+            #   div(tags$b("Select a data package output directory:"),
+            #       actionButton(ns("dp_location_in"), "Browse ...")
+            #   ),
+            #   div(tags$b("Currently selected folder:"),
+            #       div(
+            #         style = "white-space: nowrap; text-overflow: ellipsis; overflow: hidden;",
+            #         textOutput(ns("dp_location_out"))
+            #         )
+            #   )
+            # ),
+            # inputRow(
+            #   # Data files
+            #   fileInput(ns("data_files_in"), 
+            #             "Select your data files (make sure they are in the same directory)",
+            #             TRUE
+            #   ),
+            #   div(tags$b("Currently selected data files:"),
+            #       tableOutput(ns("data_files_out"))
+            #   )
+            # ),
+            # inputRow(
+            #   # License choice
+            #   selectInput("data_license_in",
+            #               "Select a license of the dataset intellectual rights",
+            #               c("CC BY","CC0")
+            #   ),
+            #   verbatimTextOutput("data_license_out")
+            # ),
+            # # DP creation
+            # conditionalPanel(
+            #   condition = "output.toggle_create_button",
+            #   actionButton(ns("create_button"),"Create")
+            # ),
+            # # Warnings
+            # conditionalPanel(
+            #   condition = "output.warnings_duplicata",
+            #   div(style="color:red;",
+            #       span("WARNING: such a data package already exists (same name, same location).",br(),
+            #            "Clicking 'Create' will replace all its content. (located in: ",
+            #            textOutput(ns("dp_location_out"), inline = TRUE), textOutput(ns("dp_name_out"), inline = TRUE),")")
+            #   )
+            # )
           ) # end column2
         ) # end fluidRow
       ) # end fluidPage
@@ -88,58 +102,63 @@ selectDPUI <- function(id, title, width=12, IM, DP.path){
 }
 
 selectDP <- function(input, output, session, IM, DP.path){
-  outvar = reactiveValues()
   
-  # select DP name
-  outvar$dp.name <- reactive({input$dp.name})
-  output$dp.name <- renderText({ outvar$dp.name })
+  callModule(inputRowServer, "dp_name",
+             renderText, alist(reactive(input$input)()) )
+  callModule(inputRowServer, "data_files",
+             renderTable, alist(reactive(input$input)()) ) 
+  callModule(inputRowServer, "license",
+             renderText, alist(reactive(input$input)()) ) 
   
-  # select DP directory
-  output$dp.dir.choose <- renderText({ DP.path })
-  
-  observeEvent(input$dp.dir.browse, {
-    outvar$dp.dir.choose <- chooseDirectory()
-    if(is.na(outvar$dp.dir.choose))
-      outvar$dp.dir.choose <- renderText({ DP.path })
-    output$dp.dir.choose <- outvar$dp.dir.choose
-  })
-  
-  # select Data files
-  outvar$data.files.choose <- reactive({
-    ifelse(is.null(input$data.files.browse),
-           return(data.frame(NULL)),
-           return(input$data.files.browse))
-      
-  })
-  
-  output$data.files.choose <- renderTable({
-    return( outvar$data.files.choose() )
-  })
-
-  ## Toggles
-  # reveal create-button if
-  # - 
-  output$toggle_create_button <- renderText({
-    r2js.boolean(outvar$dp.name != ''
-                 || !grepl("^[:alnum:_\\.-]+$", outvar$dp.name)
-                 || !is.null(outvar$data.files.choose)
-                 )
-  })
-  
-  # reveal warning if:
-  # - not such a directory exists BUT there is at least a directory name given
-  output$warnings_duplicata <- renderText({
-    r2js.boolean(dir.exists(paste0(outvar$dp.dir.choose, input$dp.name)) && !is.null(input$dp.name))
-  })
-  outputOptions(output, "warnings_duplicata", suspendWhenHidden = FALSE)
- 
-  # on click on create-button
-  observeEvent(input[["create-button"]], {
-    createDPFolder(DP.location = outvar$dp.dir.choose(),
-                   DP.name = input$dp.name,
-                   data.location = outvar$data.dir.choose() )
-    showTab("main", "create-tab", select = TRUE)
-  })
-  
+  # outvar <- reactiveValues()
+  # 
+  # ## Metadata management
+  # # DP name Output
+  # outvar$dp_name_out <- reactive({input$dp_name_in})
+  # output$dp_name_out <- renderText({ isolate(outvar$dp_name_out())})
+  # 
+  # 
+  # 
+  # # DP location Output
+  # outvar$dp_location_out <- eventReactive(input$dp_location_in,
+  #                                         {
+  #                                           print("click")
+  #                                           chooseDirectory()}
+  #                                         )
+  # output$dp_location_out <- renderText({outvar$dp_location_out()})
+  # 
+  # # Data files Output
+  # outvar$data_files_out <- reactive({input$data_files_in})
+  # output$data_files_out <- renderTable({outvar$data_files_out()})
+  # 
+  # # License choice Output
+  # outvar$data_license_out <- reactive({input$data_license_in})
+  # output$data_license_out <- renderText({outvar$data_license_out()})
+  # 
+  # ## Toggles
+  # # reveal create-button
+  # output$toggle_create_button <- renderText({
+  #     r2js.boolean(outvar$dp_name_out() != ''
+  #                  || !grepl("^[:alnum:_\\.-]+$", outvar$dp_name_out() )
+  #                  || !is.null(outvar$data_files_out() )
+  #                  )
+  # })
+  # outputOptions(output, "toggle_create_button", suspendWhenHidden = FALSE)
+  # 
+  # # reveal warning
+  # output$warnings_duplicata <- renderText({
+  #   r2js.boolean( dir.exists( paste0( outvar$dp_location_out(), outvar$dp_name_out() ) )
+  #                && !is.null( outvar$dp_name_out() ) )
+  # })
+  # outputOptions(output, "warnings_duplicata", suspendWhenHidden = FALSE)
+  # 
+  # ## To next tab
+  # # on click on create-button
+  # observeEvent(input$create_button, {
+  #   createDPFolder(DP.location = outvar$dp_location_out(),
+  #                  DP.name = outvar$dp_name_out(),
+  #                  data.location = outvar$data_files_out() )
+  #   showTab("main", "create-tab", select = TRUE)
+  # })
   
 }
