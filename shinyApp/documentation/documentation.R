@@ -1,7 +1,28 @@
 ### documentation.R
 
-### UI ###
+# Imports
+library(shinyTree)
+source("modules/documentation/documentation_functions.R")
+source("modules/documentation/documentation_style.R")
+source("utils/multiApply.R")
 
+# Guidelines
+cat("Loading Guidelines: \n")
+
+cat("* Loading Doc Guideline ...\r")
+docGuideline = as.list(readRDS("resources/docGuideline.RData"))
+cat("* Doc Guideline successfully loaded !\n")
+
+cat("* Loading System Guideline ...\r")
+systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
+cat("* System Guideline successfully loaded !\n")
+
+cat("Loading Namespaces Index ...\r")
+nsIndex = readRDS("resources/nsIndex.RData")
+cat("Namespaces Index successfully loaded !\n")
+
+
+# UI functions
 docUI <- function(id, IM){
   ns <- NS(id)
   
@@ -27,8 +48,10 @@ docUI <- function(id, IM){
   )
 }
 
-### SERVER ###
-documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex = nsIndex){
+
+
+# Server functions
+documentation <- function(input, output, session, IM, nsIndex = nsIndex, tree = docGuideline){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)

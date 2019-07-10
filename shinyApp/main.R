@@ -1,6 +1,11 @@
 # main.R
 source("header.R")
 
+
+# CSS var
+menuWidth = "250px"
+
+
 ### UI ###
 ui <- dashboardPage(
   title = "MetaShARK",

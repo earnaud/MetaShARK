@@ -32,4 +32,3 @@ r2js.boolean <- function(condition){
   if(is.character(condition)) condition = as.logical(condition)
   return(tolower(as.character(condition)))
 }
-
