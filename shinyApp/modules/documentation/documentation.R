@@ -1,24 +1,6 @@
 ### documentation.R
 
-# Imports
-library(shinyTree)
-source("modules/documentation/documentation_functions.R")
-source("modules/documentation/documentation_style.R")
-source("utils/multiApply.R")
-
-# Guidelines
-cat("Loading Guidelines: \n")
-cat("* Loading Doc Guideline ...\r")
-docGuideline = as.list(readRDS("resources/docGuideline.RData"))
-cat("* Doc Guideline successfully loaded !\n")
-cat("* Loading System Guideline ...\r")
-systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
-cat("* System Guideline successfully loaded !\n")
-cat("* Loading Namespaces Index ...\r")
-nsIndex = as.list(readRDS("resources/nsIndex.RData"))
-cat("* Namespaces Index successfully loaded !\n")
-
-# UI functions
+### UI ###
 docUI <- function(id, IM){
   ns <- NS(id)
   
@@ -44,10 +26,8 @@ docUI <- function(id, IM){
   )
 }
 
-
-
-# Server functions
-documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex){
+### SERVER ###
+documentation <- function(input, output, session, IM, tree = docGuideline, ns.index = nsIndex){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)
@@ -78,7 +58,7 @@ documentation <- function(input, output, session, IM, tree = docGuideline, nsInd
       
       # fetch the eml-xsd content in the systemGuideLine list
       systemContent <- followPath(systemGuideline, systemPath)
-      out <- extractContent(systemContent, nsIndex)
+      out <- extractContent(systemContent, nsIndex = ns.index)
       return(out)
     }
   })
