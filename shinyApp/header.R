@@ -4,20 +4,23 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 options(shiny.reactlog=TRUE)
 
 ### IMPORTS ----
-
+  list.of.packages <- c("shiny", "shinyTree", "shinydashboard", "shinyjs")
+  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  if(length(new.packages)) install.packages(new.packages)
+  
   ## GUI ----
   library(shiny)
   library(shinyTree)
   library(shinydashboard)
   library(shinyjs)
-  library(tcltk2)
+  # library(tcltk2)
   
   ## EML ----
-  library(EML)
-  library(EMLassemblyline)
+  # library(EML)
+  # library(EMLassemblyline)
   
   ## Utils ----
-  library(devtools)
+  # library(devtools)
 
   ## Modules assembly ----
   # Welcome
