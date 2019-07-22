@@ -10,7 +10,8 @@ extractContent <- function(content, nsIndex){
   att <- content$`R-Attributes`
   att.out <- c()
   if(any(grepl("TYPE", names(att)))){
-    att.type <- nsIndex[sapply(names(nsIndex), grepl, att["TYPE"])]
+    browser()
+    att.type <- nsIndex[sapply(names(nsIndex), grepl, att[["TYPE"]])]
     if(length(att.type) == 0) att.type <- "this module"
     att.out <- c( att.out,
                   paste(as.character(tags$b("Cf.")), 

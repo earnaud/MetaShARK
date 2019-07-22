@@ -1,7 +1,6 @@
 ### documentation.R
 
 ### UI ###
-
 docUI <- function(id, IM){
   ns <- NS(id)
   
@@ -28,7 +27,7 @@ docUI <- function(id, IM){
 }
 
 ### SERVER ###
-documentation <- function(input, output, session, IM, tree = docGuideline, nsIndex = nsIndex){
+documentation <- function(input, output, session, IM, tree = docGuideline, ns.index = nsIndex){
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)
@@ -59,7 +58,7 @@ documentation <- function(input, output, session, IM, tree = docGuideline, nsInd
       
       # fetch the eml-xsd content in the systemGuideLine list
       systemContent <- followPath(systemGuideline, systemPath)
-      out <- extractContent(systemContent, nsIndex)
+      out <- extractContent(systemContent, nsIndex = ns.index)
       return(out)
     }
   })
