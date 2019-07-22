@@ -1,8 +1,4 @@
-# documentation.R
-
-### IMPORTS ###
-
-
+# about.R
 
 ### UI ###
 aboutUI <- function(id, IM){
@@ -42,6 +38,6 @@ aboutUI <- function(id, IM){
 
 
 ### SERVER ###
-generate <- function(input, output, session, IM){
+about <- function(input, output, session, IM){
   
 }

@@ -1,7 +1,5 @@
 # fill.R
 
-### IMPORTS ###
-
 ### UI ###
 welcomeUI <- function(id, IM){
   ns <- NS(id)
@@ -32,7 +30,6 @@ welcomeUI <- function(id, IM){
 }
 
 
-
 ### SERVER ###
 welcome <- function(input, output, session, IM){
   ns <- session$ns
@@ -41,8 +38,5 @@ welcome <- function(input, output, session, IM){
                                     contentType = "image/png",
                                     width = "240px",
                                     height = "120px") }, deleteFile = FALSE)
-  
 }
-
-
 
