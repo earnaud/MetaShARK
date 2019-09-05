@@ -1,12 +1,7 @@
 # main.R
 source("header.R")
 
-
-# CSS var
-menuWidth = "250px"
-
-
-### UI ###
+  ### UI ###
 ui <- dashboardPage(
   title = "MetaShARK",
   dashboardHeader(
@@ -15,7 +10,7 @@ ui <- dashboardPage(
   ),
   ## Menus ##
   dashboardSidebar(
-    useShinyjs(),
+    useShinyjs(), 
     sidebarMenu(
       menuItem("Welcome", tabName = "welcome", 
                icon = icon("home")),
@@ -49,7 +44,36 @@ ui <- dashboardPage(
 server <- function(input,output,session){
   session$onSessionEnded(stopApp)
   
-  ## modules called
+  ## EMLAL navigation ----
+  rvNav <- reactiveValues(
+    # global: possible modes for "move"
+    POSSIBLE = factor(c("next","prev","quit")),
+    current = 1,
+    lastMove = NULL
+  )
+  
+  observe({
+    lapply(ls(pattern = "^fill.emlal.+"), function(x) {
+      observe({
+        x$navigate$move
+        if(!is.null(x$navigate$move
+                    && x$navigate$move %in% rvNav$POSSIBLE))
+        {
+          rvNav$lastMove <- x$navigate # last modified
+          rvNav$current <- switch(rvNav$lastMove,
+                                  `next`= rvNav$current+1,
+                                  prev = rvNav$current-1,
+                                  quit = 1)
+        }
+        else{
+          warning("Bad value for navigation sent from part",
+                  rvNav$current,"of the EMLAL module.")
+        }
+      })
+    })
+  })
+  
+  ## modules called ----
   # welcome
   welcome <- callModule(welcome, IM.welcome[1], IM = IM.welcome)
   # fill
@@ -58,20 +82,22 @@ server <- function(input,output,session){
                      IM = IM.fill)
     fill.emlal <- callModule(EMLAL, 
                              IM.EMLAL[1], 
-                             IM = IM.EMLAL)
+                             IM = IM.EMLAL,
+                             nav = rvNav)
       fill.emlal.selectDP <- callModule(selectDP, 
                                         IM.EMLAL[3], 
                                         IM = IM.EMLAL, 
                                         DP.path = DP.path)
       fill.emlal.createDP <- callModule(createDP, 
                                         IM.EMLAL[4], 
-                                        IM = IM.EMLAL)
+                                        IM = IM.EMLAL,
+                                        previous = fill.emlal.selectDP)
   # doc
   doc <- callModule(documentation, 
                     IM.doc[1], 
                     IM = IM.doc)
   
-  ## Common UI elements
+  ## Common UI elements ----
   output$logo <- renderImage({list(src="resources/pictures/MetaShARK_icon2.png",
                                     contentType = "image/png",
                                     width = "100px",
@@ -81,3 +107,4 @@ server <- function(input,output,session){
 
 ### APP LAUNCH ###
 shinyApp(ui, server)
+

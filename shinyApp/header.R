@@ -5,19 +5,20 @@ options(shiny.reactlog=TRUE)
 
 ### IMPORTS ----
 
-  ## GUI ----
-  library(shiny)
-  library(shinyTree)
-  library(shinydashboard)
-  library(shinyjs)
-  library(tcltk2)
+  ## Libraries ----
+  # GUI
+    library(shiny)
+    library(shinyTree)
+    library(shinydashboard)
+    library(shinyjs)
+    library(tcltk2)
   
-  ## EML ----
-  library(EML)
-  library(EMLassemblyline)
-  
-  ## Utils ----
-  library(devtools)
+  # EML
+    library(EML)
+    library(EMLassemblyline)
+    
+  # Utils
+    library(devtools)
 
   ## Modules assembly ----
   # Welcome
@@ -37,10 +38,11 @@ options(shiny.reactlog=TRUE)
     source("modules/about/about.R")
   # Utils - not GUI
     source("utils/multiApply.R")
+    source("utils/reactiveTrigger.R")
   
   ## Dir creation ----
-    if(!dir.exists(".cache/")) dir.create(".cache/")
-    DP.path <- "dataPackagesOutput/emlAssemblyLine/"
+    dir.create(".cache/", recursive = TRUE, showWarnings = FALSE)
+    DP.path <- paste0(getwd(),"/dataPackagesOutput/emlAssemblyLine/")
     dir.create(DP.path, recursive = TRUE, showWarnings = FALSE)
 
 ### RESOURCES ###
@@ -79,3 +81,8 @@ options(shiny.reactlog=TRUE)
   
   mainpanelStyle = "overflow-y: scroll;
                   max-height: 800px;"
+  
+  inputStyle = "border: 1px solid lightgrey;
+                margin: 5px;
+                padding: 5px;
+                width: 100%;"

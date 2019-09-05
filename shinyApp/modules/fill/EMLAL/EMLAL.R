@@ -45,40 +45,32 @@ EMLALUI <- function(id, IM){
         <i>(preface by Colin Smith, EDI)</i>"
       )
     ),
-    tabBox(
+    box(
       title = "EML Assembly Line",
-      id = ns("main"),
-      side = "left", width = 12,
-      tabPanel(
-        value = "select-tab",
-        title = icon("plus-circle"),
-        uiOutput(ns("EMLALUI.select"))
-      ),
-      tabPanel(
-        value = "create-tab",
-        title = icon("arrow-alt-circle-right"),
-        uiOutput(ns("EMLALUI.create"))
-      )
+      width = 12,
+      uiOutput(ns("currentUI"))
     )
   )
 }
 
 ### SERVER ###
-EMLAL <- function(input, output, session, IM){
+EMLAL <- function(input, output, session, IM, nav){
   ns <- session$ns
   
   # reactive values
   steps = paste0(c("select","create","edit","make","publish"), "-tab")
   
   # Output
-  output$EMLALUI.select <- renderUI({ selectDPUI(id = IM.EMLAL[3],
-                                                 IM = IM.EMLAL,
-                                                 title = steps[1],
-                                                 DP.path = DP.path)
-                            })
-  output$EMLALUI.create <- renderUI({ createDPUI(id = IM.EMLAL[4],
-                                                 IM = IM.EMLAL,
-                                                 title = steps[2],
-                                                 testArgs = "testArgs")
-                           })
+  output$currentUI <- renderUI({
+    print(as.character(nav$current))
+    switch(as.character(nav$current),
+           "1" = selectDPUI(id = IM.EMLAL[3],
+                            IM = IM.EMLAL,
+                            title = steps[1],
+                            DP.path = DP.path),
+           "2" = createDPUI(id = IM.EMLAL[4],
+                            IM = IM.EMLAL,
+                            title = steps[2]))
+  })
+  
 }
