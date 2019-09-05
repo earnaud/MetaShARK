@@ -1,5 +1,7 @@
 # EMLAL.R
 
+
+
 # choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {
   if (exists('utils::choose.dir')) {
@@ -32,3 +34,4 @@ r2js.boolean <- function(condition){
   if(is.character(condition)) condition = as.logical(condition)
   return(tolower(as.character(condition)))
 }
+
