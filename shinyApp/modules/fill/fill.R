@@ -1,14 +1,5 @@
 # fill.R
 
-### IMPORTS ###
-library(EML)
-
-source("modules/fill/EMLAL/EMLAL.R")
-
-### RESOURCES ###
-IM.EMLAL = c("EMLALModule","EML Assembly Line",
-             "select","create","edit","make","publish")
-
 ### UI ###
 fillUI <- function(id, IM){
   ns <- NS(id)
@@ -23,6 +14,18 @@ fillUI <- function(id, IM){
 
 
 ### SERVER ###
-fill <- function(input, output, session, IM){
+fill <- function(input, output, session, IM, globalRV){
   
+  # variable initialization ----
+  # save variable
+  savevar <- initReactive()
+
+  observeEvent(globalRV$navigate,{
+    savevar$emlal$step <- max(
+      globalRV$navigate,
+      savevar$emlal$step
+    )
+  })
+  
+  return(savevar)
 }

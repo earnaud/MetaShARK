@@ -1,7 +1,5 @@
 # documentation_functions.R
 
-# --- UI display
-
 # extracts the targetted EML content from a list
 extractContent <- function(content, nsIndex){
   # modules annotation is stored in 'eml-module/schema'
@@ -12,7 +10,7 @@ extractContent <- function(content, nsIndex){
   att <- content$`R-Attributes`
   att.out <- c()
   if(any(grepl("TYPE", names(att)))){
-    att.type <- nsIndex[sapply(names(nsIndex), grepl, att["TYPE"])]
+    att.type <- nsIndex[sapply(names(nsIndex), grepl, att[["TYPE"]])]
     if(length(att.type) == 0) att.type <- "this module"
     att.out <- c( att.out,
                   paste(as.character(tags$b("Cf.")), 
@@ -41,7 +39,7 @@ extractContent <- function(content, nsIndex){
     # preprocess 'ulink' tags that require their URL attributes (R-Attributes needed)
     {
       ulinks.ind = which(grepl("ulink", attr(out, "names"))) # ulinks are always structured the same way
-      # browser()
+      # browser() 
       out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 1] ] <- paste(out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 1] ], # raw text
                                                                  out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 2] ], # URL
                                                                  sep = "[RECOGNIZED]")
