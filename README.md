@@ -14,11 +14,12 @@ You can launch the app through the 'main.R' script (shinyApp/main.R). The suppor
 
 ### Required libraries
 
-ARSE require following libraries to perform:
+MetaShARK require following libraries to perform:
 * [shiny](https://shiny.rstudio.com/)
 * [shinyTree](https://github.com/shinyTree/shinyTree)
 * [shinydashboard](https://github.com/rstudio/shinydashboard)
 * [shinyjs](https://deanattali.com/shinyjs/)
+* [EML](https://github.com/NCEAS/eml)
 * [EMLassemblyline](https://github.com/EDIorg/EMLassemblyline) for the corresponding `Fill in` module
 
 ## Releases
@@ -28,7 +29,7 @@ ARSE require following libraries to perform:
 #### Features
 * The tool still allows only the documentation browsing. The support has been moved from basic shiny style to the shiny Dashboard style. With this feature comes easier ways to organize the UI for future steps. 
 * The whole repository architecture has been remade, which caused difficulties on uploading the latest version. 
-* A \_old directory has been created at the root to store old files which could still be useful later. Any documentation about them shall be contained within it as comments for scripts or data labels for other files.
+* A .old directory has been created at the root to store old files which could still be useful later. Any documentation about them shall be contained within it as comments for scripts or data labels for other files.
 
 ### Release 20190415
 
