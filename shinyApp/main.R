@@ -1,22 +1,14 @@
 # main.R
 source("header.R")
 
-<<<<<<< HEAD
 ### UI ###
-=======
-  ### UI ###
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 ui <- dashboardPage(
   title = "MetaShARK",
   dashboardHeader(
     title = span(imageOutput("logo", inline = TRUE), "MetaShARK"),
     titleWidth = menuWidth
   ),
-<<<<<<< HEAD
   ## Menus ## ----
-=======
-  ## Menus ##
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
   dashboardSidebar(
     useShinyjs(), 
     sidebarMenu(
@@ -28,18 +20,11 @@ ui <- dashboardPage(
                icon = icon("glasses")),
       menuItem("About MetaShARK", tabName = "about", 
                icon = icon("beer"))
-<<<<<<< HEAD
       ,actionButton("check","Dev Check")
     ),
     width = menuWidth
   ), # end sidebar
   ## Content ## ----
-=======
-      ),
-  width = menuWidth
-  ),
-  ## Content ##
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
   dashboardBody(
     tabItems(
       tabItem(tabName = "welcome",
@@ -51,13 +36,8 @@ ui <- dashboardPage(
       tabItem(tabName = "about",
               aboutUI(IM.about[1], IM = IM.about))
     )
-<<<<<<< HEAD
   ) # end body
 ) # end dashboard
-=======
-  )
-)
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 
 
 
@@ -65,7 +45,6 @@ ui <- dashboardPage(
 server <- function(input,output,session){
   session$onSessionEnded(stopApp)
   
-<<<<<<< HEAD
   # Reactive values ----
   globalRV <- reactiveValues(
     navigate =  1,
@@ -75,42 +54,12 @@ server <- function(input,output,session){
   # DEV: do things by clicking a button
   observeEvent(input$check,{
     browser()
-=======
-  ## EMLAL navigation ----
-  rvNav <- reactiveValues(
-    # global: possible modes for "move"
-    POSSIBLE = factor(c("next","prev","quit")),
-    current = 1,
-    lastMove = NULL
-  )
-  
-  observe({
-    lapply(ls(pattern = "^fill.emlal.+"), function(x) {
-      observe({
-        x$navigate$move
-        if(!is.null(x$navigate$move
-                    && x$navigate$move %in% rvNav$POSSIBLE))
-        {
-          rvNav$lastMove <- x$navigate # last modified
-          rvNav$current <- switch(rvNav$lastMove,
-                                  `next`= rvNav$current+1,
-                                  prev = rvNav$current-1,
-                                  quit = 1)
-        }
-        else{
-          warning("Bad value for navigation sent from part",
-                  rvNav$current,"of the EMLAL module.")
-        }
-      })
-    })
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
   })
   
   ## modules called ----
   # welcome
   welcome <- callModule(welcome, IM.welcome[1], IM = IM.welcome)
   # fill
-<<<<<<< HEAD
   savevar <- callModule(fill, 
                      IM.fill[1], 
                      IM = IM.fill,
@@ -133,23 +82,6 @@ server <- function(input,output,session){
                  savevar = savevar,
                  globalRV = globalRV)
   
-=======
-  fill <- callModule(fill, 
-                     IM.fill[1], 
-                     IM = IM.fill)
-    fill.emlal <- callModule(EMLAL, 
-                             IM.EMLAL[1], 
-                             IM = IM.EMLAL,
-                             nav = rvNav)
-      fill.emlal.selectDP <- callModule(selectDP, 
-                                        IM.EMLAL[3], 
-                                        IM = IM.EMLAL, 
-                                        DP.path = DP.path)
-      fill.emlal.createDP <- callModule(createDP, 
-                                        IM.EMLAL[4], 
-                                        IM = IM.EMLAL,
-                                        previous = fill.emlal.selectDP)
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
   # doc
   doc <- callModule(documentation, 
                     IM.doc[1], 

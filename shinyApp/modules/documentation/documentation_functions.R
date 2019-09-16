@@ -10,10 +10,6 @@ extractContent <- function(content, nsIndex){
   att <- content$`R-Attributes`
   att.out <- c()
   if(any(grepl("TYPE", names(att)))){
-<<<<<<< HEAD
-=======
-    browser()
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
     att.type <- nsIndex[sapply(names(nsIndex), grepl, att[["TYPE"]])]
     if(length(att.type) == 0) att.type <- "this module"
     att.out <- c( att.out,

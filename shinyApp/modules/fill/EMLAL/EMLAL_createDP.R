@@ -6,7 +6,6 @@ createDPUI <- function(id, title, IM){
   
   return(
       fluidPage(
-<<<<<<< HEAD
         column(10,
                h4("Data files"),
                HTML("When selecting your files, you can't select
@@ -32,15 +31,10 @@ createDPUI <- function(id, title, IM){
                saveButton(ns(id), style = rightButtonStyle),
                style = "text-align: center; padding: 0;"
         )
-=======
-        textOutput("dp_name"),
-        textOutput("dp_location")
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
       ) # end fluidPage
     ) # end return
 }
 
-<<<<<<< HEAD
 createDP <- function(input, output, session, IM, savevar, globalRV){
   ns <- session$ns
   
@@ -143,16 +137,4 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
   
   # Output ----
   return(savevar)
-=======
-createDP <- function(input, output, session, IM, previous){
-  ns <- session$ns
-  
-  output$dp_name <- renderText({
-    previous$dp_name
-  })
-  
-  output$dp_location <- renderText({
-    previous$dp_location
-  })
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 }

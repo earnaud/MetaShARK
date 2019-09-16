@@ -9,7 +9,6 @@ selectDPUI <- function(id, title, width=12, IM){
     fluidPage(
       title = "Organize data packages",
       # Data package location
-<<<<<<< HEAD
       with_tippy(
         fluidRow(
           column(4,
@@ -27,12 +26,6 @@ selectDPUI <- function(id, title, width=12, IM){
         "This is the location where your data packages will be
         saved. A folder will be created, respectively named 
         after your input."
-=======
-      fluidRow(
-        actionButton(ns("dp_location"), "Choose directory"),
-        textOutput(ns("dp_location")),
-        style=paste(inputStyle, "display:inline-block;")
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
       ),
       fluidRow(
         # Use existing DP
@@ -41,12 +34,8 @@ selectDPUI <- function(id, title, width=12, IM){
                   style="text-align:center"),
                uiOutput(ns("dp_list")),
                actionButton(ns("dp_load"), "Load"),
-<<<<<<< HEAD
                actionButton(ns("dp_delete"),"Delete",
                             style = redButtonStyle)
-=======
-               actionButton(ns("dp_delete"),"Delete")
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
         ),
         # Create DP
         column(floor(width/2),
@@ -57,7 +46,6 @@ selectDPUI <- function(id, title, width=12, IM){
                textInput(ns("dp_name"), "Data package name",
                          placeholder = paste0(Sys.Date(),"_project")),
                textOutput(ns("warning_dp_name")),
-<<<<<<< HEAD
                with_tippy(
                  div(id = "license-help",
                      selectInput(ns("license"),
@@ -70,8 +58,6 @@ selectDPUI <- function(id, title, width=12, IM){
                  CC-BY-4.0: open source authorship.
                  For more details, visit Creative Commons"
                ),
-=======
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
                # DP creation
                actionButton(ns("dp_create"),"Create")
        ) # end column2
@@ -84,7 +70,6 @@ selectDPUI <- function(id, title, width=12, IM){
   
 }
 
-<<<<<<< HEAD
 selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
   
   # variable initialization ----
@@ -195,48 +180,6 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
         NULL
     )
     
-=======
-selectDP <- function(input, output, session, IM, DP.path){
-  
-  # variable initialization
-  ns <- session$ns
-  parent_ns = NS(IM.EMLAL[1])
-  hideElement(selector = paste0("#EMLALModule-main li a[data-value=create-tab]"))
-  
-  
-  outvar <- reactiveValues(
-    dp_location = NULL,
-    dp_name = NULL
-  )
-  rv <- reactiveValues(
-    dp_list = NULL,
-    warning_dp_name = NULL
-  )
-  navigate <- reactiveValues(
-    move = NULL
-  )
-  
-  # DP location ----
-  outvar$dp_location <- DP.path
-  
-  observeEvent(input$dp_location, {
-    save <- outvar$dp_location
-    outvar$dp_location <- chooseDirectory(default = DP.path)
-    if(is.na(outvar$dp_location))
-      outvar$dp_location <- save
-  })
-  
-  output$dp_location <- renderText({
-    outvar$dp_location
-  })
-  
-  # DP list in location ----
-  observeEvent(outvar$dp_location, {
-    dpList <- list.files(outvar$dp_location)
-    dpList <- dpList[grepl("_emldp$", dpList)]
-    if(length(dpList) == 0) dpList <- NULL
-    rv$dp_list <- dpList
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
   })
   
   output$dp_list <- renderUI({
@@ -251,8 +194,8 @@ selectDP <- function(input, output, session, IM, DP.path){
       disable("dp_delete")
       "No EML data package was found at this location."
     }
+  })
 
-<<<<<<< HEAD
   # warings for input name - toggle Create button
   output$warning_dp_name <- renderText({
     if(is.null(rv$warning_dp_name)){
@@ -363,91 +306,5 @@ selectDP <- function(input, output, session, IM, DP.path){
   
   # Output ----
   return(savevar)
-=======
-  })
   
-  observeEvent(input$dp_list, {
-    if(input$dp_list != ""){
-      enable("dp_load")
-      enable("dp_delete")
-    }
-    else{
-      disable("dp_load")
-      disable("dp_delete")
-    }
-  })  
-  
-  # DP name ----
-  observeEvent(input$dp_name, {
-    # name validity test
-    rv$warning_dp_name <- c(
-      ifelse(nchar(input$dp_name) < 3,
-             "Please type a name with at least 3 characters.",
-             ""),
-      ifelse(!grepl("^[[:alnum:]_\\.-]+$",input$dp_name) && nzchar(input$dp_name),
-             "Only authorized characters are alphanumeric, '.' (dot), '_' (underscore) and '-' (hyphen).",
-             "")
-    )
-    outvar$dp_name <- paste0(input$dp_name,"_emldp")
-    
-    # control button
-    if(sum(nchar(rv$warning_dp_name)) == 0)
-      enable("dp_create")
-    else
-      disable("dp.create")
-  })
-
-  output$warning_dp_name <- renderText({
-    if(sum(nchar(rv$warning_dp_name)) == 0)
-      return(NULL)
-    else
-      return(paste(c(rv$warning_dp_name,""), collapse = "\n"))
-  })
-  
-  # DP management ----
-  observeEvent(input$dp_create, {
-    req(input$dp_name)
-    
-    dp <- outvar$dp_name
-    path <- outvar$dp_location
-    
-    cat("Creating:",dp,"\nAt:",path,"\n")
-    
-    # dir.create(paste0(path,dp))
-    template_directories(
-      path,
-      dp
-    )
-    rv$dp_list <- c(rv$dp_list,dp)
-    navigate$move <- "next"
-    showElement(selector = paste0("#EMLALModule-main li a[data-value=create-tab]"))
-  })
-  
-  # Load DP
-  observeEvent(input$dp_load, {
-    req(input$dp_list)
-    
-    dp <- input$dp_list
-    path <- outvar$dp_location
-    cat("Loading:",dp,"\nAt:",path,"\n") # to replace by loading DP
-    
-    navigate$move <- "next"
-    showElement(selector = paste0("#EMLALModule-main li a[data-value=create-tab]"))
-  })
-  
-  # Delete DP -- need to trigger the dpList
-  observeEvent(input$dp_delete, {
-    req(input$dp_list)
-    
-    dp <- input$dp_list
-    path <- outvar$dp_location
-    cat("Deleting:",dp,"\nAt:",path,"\n") # to replace by deleting DP
-    unlink(paste0(path,dp), recursive = TRUE)
-    rv$dp_list <- rv$dp_list[rv$dp_list != dp]
-  })
-  
-  return(list(navigate = navigate,
-              outvar = outvar)
-         )
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 }

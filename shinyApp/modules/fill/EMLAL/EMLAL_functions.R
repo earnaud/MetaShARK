@@ -1,6 +1,5 @@
 # EMLAL.R
 
-<<<<<<< HEAD
 ## UIs for input ----
 
 # quit dp edition
@@ -114,9 +113,6 @@ initReactive <- function(sublist = NULL, savevar = NULL){
                    metafin = savevar$metafin)
          )
 }
-=======
-
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 
 # choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {

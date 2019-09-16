@@ -73,9 +73,9 @@ options(shiny.reactlog=TRUE)
     library(shinyTree)
     library(shinydashboard)
     library(shinyFiles)
-    library(shinyjs)
-    library(tcltk2)
-    library(tippy) # install from github
+    # library(shinyjs)
+    # library(tcltk2)
+    # library(tippy) # install from github
   
   # EML
     library(EML)

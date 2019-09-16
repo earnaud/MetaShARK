@@ -29,10 +29,6 @@ welcomeUI <- function(id, IM){
   
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
 ### SERVER ###
 welcome <- function(input, output, session, IM){
   ns <- session$ns
@@ -41,10 +37,4 @@ welcome <- function(input, output, session, IM){
                                     contentType = "image/png",
                                     width = "240px",
                                     height = "120px") }, deleteFile = FALSE)
-<<<<<<< HEAD
-  
 }
-=======
-}
-
->>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
