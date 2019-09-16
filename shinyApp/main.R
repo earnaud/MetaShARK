@@ -20,6 +20,7 @@ ui <- dashboardPage(
                icon = icon("glasses")),
       menuItem("About MetaShARK", tabName = "about", 
                icon = icon("beer"))
+      ,actionButton("check","Dev Check")
     ),
     width = menuWidth
   ), # end sidebar
@@ -50,6 +51,10 @@ server <- function(input,output,session){
     previous = "select"
   )
   # the saved metadata will be saved through modules output `fill`
+  # DEV: do things by clicking a button
+  observeEvent(input$check,{
+    browser()
+  })
   
   ## modules called ----
   # welcome

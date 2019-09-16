@@ -11,14 +11,15 @@ selectDPUI <- function(id, title, width=12, IM){
       # Data package location
       with_tippy(
         fluidRow(
-          column(3,
+          column(4,
                  # actionButton(ns("dp_location"), "Choose directory")
                  shinyDirButton(ns("dp_location"),"Choose directory",
                                 "DP save location", icon = icon("folder-open")
                                 )
           ),
-          column(9,
-                 textOutput(ns("dp_location"))
+          column(8,
+                 textOutput(ns("dp_location")),
+                 style = "text-align: right;"
           ),
           style=paste(inputStyle, "text-overflow: ellipsis;")
         ),
@@ -34,8 +35,7 @@ selectDPUI <- function(id, title, width=12, IM){
                uiOutput(ns("dp_list")),
                actionButton(ns("dp_load"), "Load"),
                actionButton(ns("dp_delete"),"Delete",
-                            style = redButtonStyle),
-               actionButton(ns("check"),"Dev Check", style = rightButtonStyle)
+                            style = redButtonStyle)
         ),
         # Create DP
         column(floor(width/2),
@@ -43,11 +43,10 @@ selectDPUI <- function(id, title, width=12, IM){
                   style="text-align:center"),
 
                # Data package title
-               div(id = "a",
                textInput(ns("dp_name"), "Data package name",
                          placeholder = paste0(Sys.Date(),"_project")),
                textOutput(ns("warning_dp_name")),
-               tippy_this(
+               with_tippy(
                  div(id = "license-help",
                      selectInput(ns("license"),
                                  "Select an Intellectual Rights License:",
@@ -57,11 +56,7 @@ selectDPUI <- function(id, title, width=12, IM){
                  "license-help",
                  "CC0: public domain.  
                  CC-BY-4.0: open source authorship.
-                 For more details, visit Creative Commons",
-                 placement = "left",
-                 delay = 1000,
-                 heighy = "200px"
-               )
+                 For more details, visit Creative Commons"
                ),
                # DP creation
                actionButton(ns("dp_create"),"Create")
@@ -81,11 +76,6 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
   ns <- session$ns
   parent_ns = NS(IM.EMLAL[1])
   
-  # DEV: do things by clicking a button
-  observeEvent(input$check,{
-    browser()
-  })
-  
   # local values - to save will communicate with other modules
   rv <- reactiveValues(
     # to save
@@ -97,15 +87,15 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
     dp_license = NULL,
     warning_dp_name = NULL
   )
-  # volumes <- c(Home = HOME, base = getVolumes()())
+  volumes <- c(Home = HOME, base = getVolumes()())
   
   # DP location ----
   
   # chose DP location
-  # shinyDirChoose(input, ns("dp_location"),
-  #                roots = volumes,
-  #                # defaultRoot = HOME,
-  #                session = session)
+  shinyDirChoose(input, ns("dp_location"),
+                 roots = volumes,
+                 # defaultRoot = HOME,
+                 session = session)
   
   # update reactive value  
   observeEvent(input$dp_location, {
@@ -116,8 +106,8 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
     save <- rv$dp_location
     
     # actions
-    rv$dp_location <- input$dp_location
-    # rv$dp_location <- parseDirPath(volumes, input$dp_location)
+    # rv$dp_location <- input$dp_location
+    rv$dp_location <- parseDirPath(volumes, input$dp_location)
     if(is.na(rv$dp_location))
       rv$dp_location <- save
   })

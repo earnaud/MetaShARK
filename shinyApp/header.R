@@ -65,7 +65,7 @@ options(shiny.reactlog=TRUE)
     library(shinyFiles)
     library(shinyjs)
     library(tcltk2)
-    library(tippy) # install from gi
+    library(tippy) # install from github
   
   # EML
     library(EML)

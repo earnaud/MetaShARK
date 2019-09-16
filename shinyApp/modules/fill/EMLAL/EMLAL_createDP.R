@@ -29,7 +29,6 @@ createDPUI <- function(id, title, IM){
                h4("Navigation"),
                quitButton(ns(id), style = rightButtonStyle),
                saveButton(ns(id), style = rightButtonStyle),
-               actionButton(ns("check"),"Dev Check", style = rightButtonStyle),
                style = "text-align: center; padding: 0;"
         )
       ) # end fluidPage
@@ -69,10 +68,6 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
              savevar$emlal, 
              savevar$emlal$selectDP$dp_path, 
              savevar$emlal$selectDP$dp_name)
-  # DEV: do things by clicking a button
-  observeEvent(input$check,{
-    browser()
-  })
   
   # Data file upload ----
   # Add data files
