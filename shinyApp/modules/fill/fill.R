@@ -4,10 +4,11 @@
 fillUI <- function(id, IM){
   ns <- NS(id)
   
-  tabsetPanel(id = ns("tabs"),
-    tabPanel(IM.EMLAL[2], EMLALUI(IM.EMLAL[1], IM.EMLAL)),
-    tabPanel("MetaFIN", h1("Under Construction"))
-  )
+  h1("Under construction.")
+  # tabsetPanel(id = ns("tabs"),
+  #   tabPanel(IM.EMLAL[2], EMLALUI(IM.EMLAL[1], IM.EMLAL)),
+  #   tabPanel("MetaFIN", h1("Under Construction"))
+  # )
   
 }
 
