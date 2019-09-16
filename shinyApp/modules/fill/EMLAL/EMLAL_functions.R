@@ -1,5 +1,123 @@
 # EMLAL.R
 
+<<<<<<< HEAD
+## UIs for input ----
+
+# quit dp edition
+quitButton <- function(id, style){
+  ns <- NS(id)
+  
+  actionButton(ns("quit"), "Quit",
+               icon = icon("sign-out-alt"), style = style)
+}
+
+# save dp snapshot
+saveButton <- function(id, style){
+  ns <- NS(id)
+  
+  actionButton(ns("save"), "Save",
+               icon = icon("save",class="regular"), style = style)
+}
+
+
+
+## Associated server functions ----
+
+# on quit button 
+onQuit <- function(input, output, session, 
+                   globalRV, toSave, path, filename){
+  ns <- session$ns
+  
+  # modal dialog for quitting data description
+  quitModal <- modalDialog(
+    title = "You are leaving data description",
+    "Are you sure to leave? Some of your metadata have maybe not been saved.",
+    footer = tagList(
+      modalButton("Cancel"),
+      actionButton(ns("save_quit_button"),"Save & Quit"),
+      actionButton(ns("quit_button"),"Quit",icon("times-circle"),
+                   style = redButtonStyle)
+    )
+  )
+  
+  # show modal on 'quit' button clicked
+  observeEvent(input$quit,{
+    showModal(quitModal)
+  })
+  
+  # calls saveRDS method and quits
+  observeEvent(input$save_quit_button,{
+    removeModal()
+    saveReactive(toSave, path, filename)
+    globalRV$navigate <- 1
+  })
+  
+  # quits simply
+  observeEvent(input$quit_button,{
+    removeModal()
+    globalRV$navigate <- 1
+  })
+}
+
+# on save button
+# toSave is a structured list of reactiveValues (aka savevar in various modules)
+onSave <- function(input, output, session, 
+                   toSave, path, filename){
+  observeEvent(input$save,{
+    saveReactive(toSave, path, filename)
+  })
+}
+
+# set the path and save the savevar
+saveReactive <- function(toSave, path, filename){
+  print(paste0(path,"/",filename,".RData"))
+  saveRDS(toSave, paste0(path,"/",filename,".RData"))
+}
+
+# Initialize savevar variable
+# EMLAL module specific function
+# @param sublist: either NULL, "emlal", "metafin" to precise which sublist 
+#                 to initialize
+initReactive <- function(sublist = NULL, savevar = NULL){
+  if(!is.null(sublist) && is.null(savevar))
+    stop("Attempt to initialize savevar's sublist without savevar.")
+  if(!(is.null(sublist) || sublist %in% c("emlal","metafin")))
+    stop("Attempt to initialize savevar with inconsistent arguments")
+  
+  # re-creates a whole savevar
+  if(is.null(sublist))
+    savevar <- reactiveValues()
+  
+  # emlal reactivelist management
+  if(is.null(sublist) || sublist == "emlal")
+    savevar$emlal <- list(
+      step = 0,
+      selectDP = list(
+        dp_name = NULL,
+        dp_path = NULL
+      ),
+      createDP = list(
+        dp_data_files = NULL
+      )
+    )
+  
+  # metafin reactivelist management
+  if(is.null(sublist) || sublist == "metafin")
+    savevar$metafin <- list()
+  
+  # differential returns
+  return(if(is.null(sublist))
+            savevar
+          else
+            switch(sublist,
+                   emlal = savevar$emlal,
+                   metafin = savevar$metafin)
+         )
+}
+=======
+
+>>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
+
 # choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {
   if (exists('utils::choose.dir')) {
@@ -27,8 +145,27 @@ createDPFolder <- function(DP.location, DP.name, data.location){
   )
 }
 
+# EAL Templates ----
+
+# Needed vars
+# - path
+# - data.path
+# - columns from table
+#   * site
+#   * lat
+#   * long
+#   * taxa
+# - taxa authority (taxonomyCleanr::view_taxa_authorities())
+# - taxa name type in "scientific","common","both"
+# ! All taxa authorities do not support all name type
+
+
+
+# Misc ----
+
 # R to JS boolean
 r2js.boolean <- function(condition){
   if(is.character(condition)) condition = as.logical(condition)
   return(tolower(as.character(condition)))
 }
+

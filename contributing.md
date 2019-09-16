@@ -7,7 +7,7 @@ As the project grows in size and code lines, it appears its design is not clean,
 The naming convention is inspired by the [Python naming convention](https://www.python.org/dev/peps/pep-0008/#package-and-module-names)
 
 **variables**
-*local.var*	variables are named in lowercase letters, and might be separated by single dots for legibility purposes
+*localVar*	variables are named in lowercase letters 'camelCase'.  
 *GLOBAL.VAR*	global variables (defined outside any function) are named with capital letters, and separated with dots.
 *Class*		class are named as variables, but their names begin with a capital letter
 
@@ -27,6 +27,19 @@ The naming convention is inspired by the [Python naming convention](https://www.
 * otherids[] : a vector of any ids used in the Shiny ui-server interactions
 *element-type*	element are named (through their 'id' argument) in lowercase separated with "-". They shall be built as follow `id-type[-misc]` with type the structure of the element.
 *\*put.ids*	in/output elements ids in the server are named in lowercase separated with dots. They shall be built as follow `what.info` with *what* the informative element and *info* the action/information contained about *what*.
+
+##
+For the **Fill/EMLAL** module, a specific variable is built: *fill*. It is of type `list` and contains `reactiveValues` in its leaves. Intermediate levels are sub-lists. The variable is built as follow:  
+. fill  
+├- emlal  
+|  ├- selectDP  
+|  ├- createDP  
+└- metafin  
+The building logic is:  
+* *root* is a list with elements corresponding to each metadata filling module (EML Assembly Line, MetaFIN).
+* 1st level nodes match filling module and contain sublist for each step of the filling process.
+* 2nd level nodes' elements are `reactiveValues` object containing the filled metadata.  
+Each of the modules node are returned at the end of their respective module. While reading a module, beware of the way their input is written.  
 
 ## Git files organization
 + _old

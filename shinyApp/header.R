@@ -3,26 +3,88 @@ rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 options(shiny.reactlog=TRUE)
 
-### IMPORTS ----
-  list.of.packages <- c("shiny", "shinyTree", "shinydashboard", "shinyjs")
-  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.packages)) install.packages(new.packages)
-  
-  ## GUI ----
-  library(shiny)
-  library(shinyTree)
-  library(shinydashboard)
-  library(shinyjs)
-  # library(tcltk2)
-  
-  ## EML ----
-  # library(EML)
-  # library(EMLassemblyline)
-  
-  ## Utils ----
-  # library(devtools)
+### RESOURCES ###
 
-  ## Modules assembly ----
+  ## Guidelines ----
+    message("Loading Guidelines:")
+    
+    # Doc = Doc-only EML subspec
+      docGuideline = as.list(readRDS("resources/docGuideline.RData"))
+      message("* Doc Guideline successfully loaded !")
+    
+    # System = whole EML spec
+      systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
+      message("* System Guideline successfully loaded !")
+      
+    # Namespace Index = which namespace lead to what module
+      cat("* Loading Namespaces Index ...\r")
+      nsIndex <- readRDS("resources/nsIndex.RData")
+      message("* Namespaces Index successfully loaded !")
+    
+    # Id Module ----
+      IM.about = c("aboutModule", "About")
+      IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
+      IM.fill = c("fillModule", "Fill")
+      IM.EMLAL = c("EMLALModule","EML Assembly Line",
+                   "select","create","edit","make","publish")
+      IM.welcome = c("welcomeModule", "Welcome")
+  
+  ## CSS var ----
+    menuWidth = "250px"
+    
+    sidebarStyle = "overflow-y: scroll;
+                      max-height: 800px;"
+    
+    mainpanelStyle = "overflow-y: scroll;
+                      max-height: 800px;"
+    
+    inputStyle = "border: 1px solid lightgrey;
+                    margin: 5px;
+                    padding: 5px;
+                    width: 100%;"
+    
+    redButtonStyle = "color: red;"
+    
+    rightButtonStyle = "position: right;
+                          width: 100%;"
+  
+  ## Global variables ----
+    DP.PATH <- paste0(getwd(),"/dataPackagesOutput/emlAssemblyLine/")
+    THRESHOLD = list(
+      dp_data_files = 500000
+    )
+    HOME = fs::path_home()
+
+### IMPORTS ----
+  #list.of.packages <- c(
+  #  # GUI
+  #  "shiny", "shinyTree", "shinydashboard", "shinyjs", "shinyFiles", "tcltk2","tippy",
+  #  # EML
+  #  "EML","EMLassemblyline",
+  #  # utils
+  #  "devtools"
+  #)
+  #new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  #if(length(new.packages)) install.packages(new.packages)
+
+  ## Libraries
+  # GUI
+    library(shiny)
+    library(shinyTree)
+    library(shinydashboard)
+    library(shinyFiles)
+    library(shinyjs)
+    library(tcltk2)
+    library(tippy) # install from github
+  
+  # EML
+    library(EML)
+    library(EMLassemblyline)
+    
+  # Utils
+    library(devtools)
+
+  ## Modules assembly
   # Welcome
     source("modules/welcome/welcome.R")
   # Fill
@@ -40,45 +102,12 @@ options(shiny.reactlog=TRUE)
     source("modules/about/about.R")
   # Utils - not GUI
     source("utils/multiApply.R")
+    source("utils/reactiveTrigger.R")
   
   ## Dir creation ----
-    if(!dir.exists(".cache/")) dir.create(".cache/")
-    DP.path <- "dataPackagesOutput/emlAssemblyLine/"
-    dir.create(DP.path, recursive = TRUE, showWarnings = FALSE)
+    dir.create(".cache/", recursive = TRUE, showWarnings = FALSE)
+    dir.create(DP.PATH, recursive = TRUE, showWarnings = FALSE)
 
-### RESOURCES ###
-
-  ## Guidelines ----
-    cat("Loading Guidelines: \n")
-  
-    # Doc = Doc-only EML subspec
-      cat("* Loading Doc Guideline ...\r")
-      docGuideline = as.list(readRDS("resources/docGuideline.RData"))
-      cat("* Doc Guideline successfully loaded !\n")
-    
-    # System = whole EML spec
-      cat("* Loading System Guideline ...\r")
-      systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
-      cat("* System Guideline successfully loaded !\n")
-    
-    # Namespace Index = which namespace lead to what module
-      cat("* Loading Namespaces Index ...\r")
-      nsIndex <- readRDS("resources/nsIndex.RData")
-      cat("* Namespaces Index successfully loaded !\n")
-
-  # Id Module ----
-  IM.about = c("aboutModule", "About")
-  IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
-  IM.fill = c("fillModule", "Fill")
-  IM.EMLAL = c("EMLALModule","EML Assembly Line",
-               "select","create","edit","make","publish")
-  IM.welcome = c("welcomeModule", "Welcome")
-
-  ## CSS var ----
-  menuWidth = "250px"
-  
-  sidebarStyle = "overflow-y: scroll;
-                  max-height: 800px;"
-  
-  mainpanelStyle = "overflow-y: scroll;
-                  max-height: 800px;"
+### MISC ZONE ----
+# Tippy real examples
+# https://cran.r-project.org/web/packages/tippy/readme/README.html

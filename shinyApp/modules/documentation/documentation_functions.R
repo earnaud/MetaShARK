@@ -10,7 +10,10 @@ extractContent <- function(content, nsIndex){
   att <- content$`R-Attributes`
   att.out <- c()
   if(any(grepl("TYPE", names(att)))){
+<<<<<<< HEAD
+=======
     browser()
+>>>>>>> 3febdf2ca1a57bb74307fb0956183fd0ae27c724
     att.type <- nsIndex[sapply(names(nsIndex), grepl, att[["TYPE"]])]
     if(length(att.type) == 0) att.type <- "this module"
     att.out <- c( att.out,
@@ -40,7 +43,7 @@ extractContent <- function(content, nsIndex){
     # preprocess 'ulink' tags that require their URL attributes (R-Attributes needed)
     {
       ulinks.ind = which(grepl("ulink", attr(out, "names"))) # ulinks are always structured the same way
-      # browser()
+      # browser() 
       out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 1] ] <- paste(out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 1] ], # raw text
                                                                  out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 2] ], # URL
                                                                  sep = "[RECOGNIZED]")
