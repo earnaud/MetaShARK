@@ -4,30 +4,61 @@
 docUI <- function(id, IM){
   ns <- NS(id)
   
+  # var initialization
+  moduleNames <- sub("^[0-9]+_(.*)$","\\1",names(docGuideline))
+  
   # UI output
-  fluidRow(
-    # search sidebar
-    column(4,
-           box(shinyTree(outputId = ns(IM[2]), # render tree
-                         search = TRUE),
-               width = 12
-           )
-           , style = sidebarStyle
+  tagList(
+    fluidRow(
+      box(width = 12,
+          title = "Check original documentation",
+          "This documentation is brought to you from XSD files downloaded from
+          <a href=''>this git</a>. You can visit the original documentation by 
+          chosing a module name and clicking the 'GO' button below:",
+          column(6,
+                 selectInput(ns("select-module"), NULL,
+                             moduleNames, selected = moduleNames[25], 
+                             multiple =FALSE)
+          ),
+          column(6,
+                 actionButton(ns("visit-module"), "Go !",
+                              icon = icon("external-link-alt"))
+          )
+      )
     ),
-    # display main panel
-    column(8,
-           div(box(uiOutput( ns(IM[4]) ), # XPath
-                   uiOutput( ns(IM[3]) ), # Documentation
-                   width = 12
-               )
-               , style = mainpanelStyle
-           )
+    fluidRow(
+      # search sidebar
+      column(5,
+             box(shinyTree(outputId = ns(IM[2]), # render tree
+                           search = TRUE,
+                           theme = "proton"),
+                 width = 12
+             )
+             , style = sidebarStyle
+      ),
+      # display main panel
+      column(7,
+             div(box(uiOutput( ns(IM[4]) ), # XPath
+                     uiOutput( ns(IM[3]) ), # Documentation
+                     width = 12
+                 )
+                 , style = mainpanelStyle
+             )
+      )
     )
   )
 }
 
 ### SERVER ###
 documentation <- function(input, output, session, IM, tree = docGuideline, ns.index = nsIndex){
+  
+  observeEvent(input$`visit-module`, {
+    url <- paste0("https://nceas.github.io/eml/schema/",
+                  input$`select-module`,
+                  "_xsd.html")
+    url <- sub(" +","",url)
+    browseURL(url)
+  })
   
   # render tree
   output[[IM[2]]] <- renderTree(tree)

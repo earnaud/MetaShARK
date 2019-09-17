@@ -18,12 +18,20 @@ EMLALUI <- function(id, IM){
         title = "Authorship",
         HTML(
           "<p>The `EML Assembly Line` package used in this module
-      and its children is the intellectual property of the
-      Environment Data Initiative (EDI). You can find further
-      details on their 
-      <a href=https://github.com/EDIorg/EMLassemblyline>git repository</a>.</p>
-      <img src=\"resources/pictures/EDI-logo.png\" 
-           alt=\"EDI logo\" />"
+          and its children is the intellectual property of the
+          Environment Data Initiative (EDI). You can find further
+          details on their 
+          <a href=https://github.com/EDIorg/EMLassemblyline>git repository</a>.
+          </p>"
+        ),
+        div(
+          imageOutput("edi-logo", # from main.R
+                      width = "100px", height = "100px"
+          ),
+          style = "display: block; 
+                   margin-left: auto;
+                   margin-right: auto;
+                   width: 100px;"
         )
     ), # end authorship
     box(width = 8,

@@ -17,17 +17,23 @@ options(shiny.reactlog=TRUE)
       message("* System Guideline successfully loaded !")
       
     # Namespace Index = which namespace lead to what module
-      cat("* Loading Namespaces Index ...\r")
       nsIndex <- readRDS("resources/nsIndex.RData")
       message("* Namespaces Index successfully loaded !")
+      
+    # Bibliography - approximatively the same as 2019 master memoir
+      bibliography <- list()
+      bibliography$actors <- bib2df::bib2df("modules/about/actors.bib")
+      bibliography$informatics <- bib2df::bib2df("modules/about/informatics.bib")
+      bibliography$ecology <- bib2df::bib2df("modules/about/ecology.bib")
+      message("* Bibliography successfully loaded !")
     
-    # Id Module ----
-      IM.about = c("aboutModule", "About")
-      IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
-      IM.fill = c("fillModule", "Fill")
-      IM.EMLAL = c("EMLALModule","EML Assembly Line",
-                   "select","create","edit","make","publish")
-      IM.welcome = c("welcomeModule", "Welcome")
+  ## Id Module ----
+    IM.about = c("aboutModule", "About")
+    IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
+    IM.fill = c("fillModule", "Fill")
+    IM.EMLAL = c("EMLALModule","EML Assembly Line",
+                 "select","create","edit","make","publish")
+    IM.welcome = c("welcomeModule", "Welcome")
   
   ## CSS var ----
     menuWidth = "250px"
@@ -46,7 +52,7 @@ options(shiny.reactlog=TRUE)
     redButtonStyle = "color: red;"
     
     rightButtonStyle = "position: right;
-                          width: 100%;"
+                        width: 100%;"
   
   ## Global variables ----
     DP.PATH <- paste0(getwd(),"/dataPackagesOutput/emlAssemblyLine/")
@@ -73,9 +79,9 @@ options(shiny.reactlog=TRUE)
     library(shinyTree)
     library(shinydashboard)
     library(shinyFiles)
-    # library(shinyjs)
-    # library(tcltk2)
-    # library(tippy) # install from github
+    library(shinyjs)
+    library(tcltk2)
+    library(tippy) # install from github
   
   # EML
     library(EML)
@@ -83,6 +89,7 @@ options(shiny.reactlog=TRUE)
     
   # Utils
     library(devtools)
+    library(RefManageR)
 
   ## Modules assembly
   # Welcome

@@ -1,14 +1,14 @@
 # main.R
 source("header.R")
 
-### UI ###
+### UI
 ui <- dashboardPage(
   title = "MetaShARK",
   dashboardHeader(
     title = span(imageOutput("logo", inline = TRUE), "MetaShARK"),
     titleWidth = menuWidth
   ),
-  ## Menus ## ----
+  ## Menus ----
   dashboardSidebar(
     useShinyjs(), 
     sidebarMenu(
@@ -24,7 +24,7 @@ ui <- dashboardPage(
     ),
     width = menuWidth
   ), # end sidebar
-  ## Content ## ----
+  ## Content ----
   dashboardBody(
     tabItems(
       tabItem(tabName = "welcome",
@@ -41,7 +41,7 @@ ui <- dashboardPage(
 
 
 
-### SERVER ###
+### SERVER
 server <- function(input,output,session){
   session$onSessionEnded(stopApp)
   
@@ -88,13 +88,36 @@ server <- function(input,output,session){
                     IM = IM.doc)
   
   ## Common UI elements ----
-  output$logo <- renderImage({list(src="resources/pictures/MetaShARK_icon2.png",
-                                    contentType = "image/png",
-                                    width = "100px",
-                                    height = "50px") },
-                             deleteFile = FALSE)
+  # MetaShARK logo
+  output$logo <- renderImage({
+    list(src="resources/pictures/MetaShARK_icon2.png",
+         contentType = "image/png",
+         width = "100px",
+         height = "50px") 
+    },
+    deleteFile = FALSE
+  )
+  
+  # called in modules/fill/EMLAL.R
+  output$`edi-logo` <- renderImage({
+    
+    # square dimensions
+    side = session$clientData$`output_edi-logo_width`
+    
+    # write temp file
+    outfile <- "resources/pictures/EDI-logo.png"
+    png(outfile, width=side, height=side)
+    dev.off()
+    
+    list(src=outfile,
+         contentType = "image/png",
+         width = side,
+         height = side # square
+         )
+  },
+  deleteFile = FALSE)
 }
 
-### APP LAUNCH ###
+### APP LAUNCH
 shinyApp(ui, server)
 

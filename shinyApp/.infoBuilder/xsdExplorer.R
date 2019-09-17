@@ -5,7 +5,7 @@
 
 # IMPORTS
 source("guidelinesFunctions.R")
-source("multiApply.R")
+source("../utils/multiApply.R")
 source("../utils/followPath.R")
 
 # Build full hierarchy 

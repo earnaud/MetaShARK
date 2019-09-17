@@ -2,18 +2,13 @@
 start.time <- Sys.time()
 cat("BUILDING GUIDELINES\n")
 
-
 ### libraries ###
 library(xml2)
 library(data.tree)
 
-
-
 ### imports ###
 source("xsdExplorer.R")
 source("../utils/multiApply.R")
-
-
 
 ### set vars ###
 {

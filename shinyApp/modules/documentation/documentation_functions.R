@@ -30,12 +30,12 @@ extractContent <- function(content, nsIndex){
   att <- att.out
   
   # Documentation content
-  if(any(grepl("annotation", attr(content,"names")))){
+  if(any(grepl("_annotation", attr(content,"names")))){
     
     ## content
     
     # Extract metadata content from main body
-    out <- unlist(content[grepl("annotation", attr(content, "names"))])
+    out <- unlist(content[grepl("_annotation", attr(content, "names"))])
     # preprocess 'ulink' tags that require their URL attributes (R-Attributes needed)
     {
       ulinks.ind = which(grepl("ulink", attr(out, "names"))) # ulinks are always structured the same way
@@ -44,7 +44,7 @@ extractContent <- function(content, nsIndex){
                                                                  out[ ulinks.ind[1:length(ulinks.ind) %% 3 == 2] ], # URL
                                                                  sep = "[RECOGNIZED]")
     }
-
+    
     out <- out[!grepl("R-Attributes", attr(out, "names"))]
     out <- sapply(out, gsub,  pattern = " +", replacement = " ")
     
@@ -52,6 +52,10 @@ extractContent <- function(content, nsIndex){
     attr(out, "names") <- gsub("\\.[0-9]+_$","", attr(out, "names"))
     attr(out, "names") <- gsub("^.*_","", attr(out, "names"))
     attr(out, "names") <- gsub("([a-z])([A-Z])","\\1 \\2", attr(out, "names"))
+    ind <- which(grepl("RECOGNIZED",out))
+    names(out)[ind] <- "ulink"
+    
+    # browser()
     
     #- reorganizing
     out <- nt.titles(out, list(remove = "emphasis",
@@ -149,15 +153,30 @@ nt.titles <- function(vec, action_target){
                  vec[targeted] <- sapply(vec[targeted], p)
              }
              
+             # add an external link through ulink
              if(action == "addurl"){
                # browser()
                work <- unlist(strsplit(vec[targeted],
                                        split = "\\[RECOGNIZED]"))
                work[1] <- gsub("\n", "", work[1])
-               vec[targeted] <- HTML(as.character(
-                 a(work[1],
-                   href = work[2])
-               ))
+               
+               # check for the type of ulink
+               ulink.type <- ifelse(grepl("^http:",work[1]), "external", "internal")
+               vec[targeted] <- switch(ulink.type,
+                                       external = HTML(as.character(
+                                         a(work[1],
+                                           href = work[2]))
+                                       ),
+                                       internal = {
+                                         eml.module.ns <- sub("(.*):.*", "\\1", work[1])
+                                         eml.module.name <- sub("^.*/([a-zA-Z]+)-.*$", "\\1", nsIndex[eml.module.ns])
+                                         HTML(as.character(
+                                           tags$b(
+                                             sub(eml.module.ns, eml.module.name, work[1])
+                                           ))
+                                         )
+                                       }
+               )
                # empirical: ulink never occurs as first element, neither as last
                vec[targeted-1] <- paste(vec[(targeted-1):(targeted+1)],
                                         collapse = " ")
@@ -175,6 +194,7 @@ nt.titles <- function(vec, action_target){
 }
 
 # Extract the path made common from every leaf path
+# Used to get a non-leaf node's path
 commonPath <- function(li,name){
   paths <- unlist(li)
   paths <- sapply(paths, strsplit, split = "/")
@@ -196,7 +216,7 @@ commonPath <- function(li,name){
 # --- List handling
 
 # Takes a hierarchy list (tree), a path written in a vector pasted
-# with sep = @ep, and returns the leaf
+# with sep = sep, and returns the targetted node
 # @param tree: explored hierarchy list thanks to @path
 # @param path: vector of characters matching some of @tree names and
 #              separated with @sep
