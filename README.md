@@ -15,14 +15,32 @@ You can launch the app through the 'main.R' script (shinyApp/main.R). The suppor
 ### Required libraries
 
 MetaShARK require following libraries to perform:
-* [shiny](https://shiny.rstudio.com/)
-* [shinyTree](https://github.com/shinyTree/shinyTree)
-* [shinydashboard](https://github.com/rstudio/shinydashboard)
-* [shinyjs](https://deanattali.com/shinyjs/)
-* [EML](https://github.com/NCEAS/eml)
-* [EMLassemblyline](https://github.com/EDIorg/EMLassemblyline) for the corresponding `Fill in` module
+
+**GUI libraries**
+* [shiny](https://CRAN.R-project.org/package=shiny)
+* [shinyTree](https://CRAN.R-project.org/package=shinyTree)
+* [shinydashboard](https://CRAN.R-project.org/package=shinydashboard)
+* [shinyjs](https://CRAN.R-project.org/package=shinyjs)
+* [tcltk2](https://CRAN.R-project.org/package=tcltk2)
+* [tippy](https://CRAN.R-project.org/package=tippy)
+
+**Metadata libraries**
+* [EML](https://CRAN.R-project.org/package=EML)
+* [EMLassemblyline](https://github.com/EDIorg/EMLassemblyline)
+
+**Utilitary libraries**
+* [devtools](https://CRAN.R-project.org/package=devtools)
+* [RefManageR](https://CRAN.R-project.org/package=RefManageR)
 
 ## Releases
+
+### Release 20190918 - EML 2.2.0
+
+With the release of EML v2.2.0 on 2019/09/13 by the NCEAS team, MetaShARK was updated to adapt to the new specification.
+
+#### Features
+* Guidelines files for Documentation were updated with EML 2.2.0 .xsd files, and the guidelines were reprocessed. Please note that NCEAS team decided to remove the documentation from high-level nodes (roots of each module). To remedy to this, the original documentation is now accessible through an external link. 
+* The 'About' section is now filled with references written directly from .bib files. 
 
 ### Release 20190507
 
@@ -35,15 +53,6 @@ MetaShARK require following libraries to perform:
 
 #### Features
 The tool allows to browse the documentation contained at any level of the EML XML schema (v. 2.1.1). The links to external sites have been implemented but the references between the modules are not. Content is based on the EML Schema provided through the [NCEAS eml repo](https://github.com/NCEAS/eml).
-
-## Next goals
-Here is the expected plan for further releases:
-* Add a 'Fill Content' section, which shall permit the user to enter an EML data package's content modularly. The filling will be controlled at its input directly through the app. The filled content will be saved in modules in a local cache.
-* Add a 'Generate EML data package' section which shall gather EML content modules into a full EML file. The EML data package would be validated and then exported into an XML file.
-* Add connections to other services for different purposes. For example, Orcid to automate the user identification.
-* Make the app as an executable.
-* Produce a mapping of the EML terms by other standards (Darwin Core, ISO 19115, ...) and integrate it into the app.
-* Make MetaShARK accessible through Galaxy-E.
 
 ## Authors
 * Elie Arnaud (developper) - elie.arnaud@mnhn.fr
