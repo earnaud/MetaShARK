@@ -6,6 +6,8 @@ docUI <- function(id, IM){
   
   # var initialization
   moduleNames <- sub("^[0-9]+_(.*)$","\\1",names(docGuideline))
+  # avoid 404
+  moduleNames <- moduleNames[moduleNames != "eml-unit Type Definitions"]
   
   # UI output
   tagList(
