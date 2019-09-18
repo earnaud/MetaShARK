@@ -30,8 +30,8 @@ options(shiny.reactlog=TRUE)
     library(shinyFiles)
     library(shinyjs)
     library(tcltk2)
-    library(tippy) # install from github
-  
+    library(tippy) 
+    
   # EML
     library(EML)
     library(EMLassemblyline)
@@ -39,7 +39,6 @@ options(shiny.reactlog=TRUE)
   # Utils
     library(devtools)
     library(RefManageR)
-    # library(dplyr)
 
   ## Modules assembly
   # Welcome
