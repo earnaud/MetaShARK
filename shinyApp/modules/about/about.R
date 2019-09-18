@@ -36,43 +36,12 @@ aboutUI <- function(id, IM){
 
 
 ### SERVER ###
-about <- function(input, output, session, IM){
+about <- function(input, output, session, IM, bibliography){
   ns <- session$ns
   
-  renderBibliograpy <- function(bibliography){
-    out <- paste("<ul>",
-      lapply(bibliography, function(bib){
-        bib <- bib[!is.na(bib)]
-        paste("<li>",
-          paste(
-            paste(bib$AUTHOR, collapse = ","),
-            gsub("[\\{\\}]","",bib$TITLE),
-            paste("In:", bib$JOURNAL),
-            paste("Vol.", bib$VOLUME),
-            paste("N°", bib$NUMBER),
-            paste(
-              "(",bib$YEAR,
-              bib$MONTH,")"
-            ),
-            paste("pp.", bib$PAGES),
-            paste("DOI:", a(bib$DOI,
-                            href = paste0("https://doi.org/",bib$DOI)
-                            )
-            ),
-            paste("URL:",a(bib$URL,
-                           href = bib$URL)),
-            sep = ", "
-          ), # end of paste 2
-          "</li>"
-        ) # end of paste 1
-      }), # end of lapply
-      "</ul>")
-    return(HTML(out))
-  }
-  
   # use function
-  output$actors <- renderUI(renderBibliograpy(bibliography$actors))
-  output$informatics <- renderUI(renderBibliograpy(bibliography$informatics))
-  output$ecology <- renderUI(renderBibliograpy(bibliography$ecology))
+  output$actors <- renderBibliography(bibliography$actors)
+  output$informatics <- renderBibliography(bibliography$informatics)
+  output$ecology <- renderBibliography(bibliography$ecology)
   
 }

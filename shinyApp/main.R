@@ -43,6 +43,7 @@ ui <- dashboardPage(
 
 ### SERVER
 server <- function(input,output,session){
+  session$onSessionEnded(function() rm(list=ls()))
   session$onSessionEnded(stopApp)
   
   # Reactive values ----
@@ -86,6 +87,12 @@ server <- function(input,output,session){
   doc <- callModule(documentation, 
                     IM.doc[1], 
                     IM = IM.doc)
+  
+  # about
+  about <- callModule(about,
+                      IM.about[1],
+                      IM = IM.about,
+                      bibliography)
   
   ## Common UI elements ----
   # MetaShARK logo

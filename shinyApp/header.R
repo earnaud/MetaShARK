@@ -3,57 +3,6 @@ rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 options(shiny.reactlog=TRUE)
 
-### RESOURCES ###
-
-  ## Guidelines ----
-    message("Loading Guidelines:")
-    
-    # Doc = Doc-only EML subspec
-      docGuideline = as.list(readRDS("resources/docGuideline.RData"))
-      message("* Doc Guideline successfully loaded !")
-    
-    # System = whole EML spec
-      systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
-      message("* System Guideline successfully loaded !")
-      
-    # Namespace Index = which namespace lead to what module
-      nsIndex <- readRDS("resources/nsIndex.RData")
-      message("* Namespaces Index successfully loaded !")
-      
-    # Bibliography - approximatively the same as 2019 master memoir
-      bibliography <- list()
-      bibliography$actors <- bib2df::bib2df("modules/about/actors.bib")
-      bibliography$informatics <- bib2df::bib2df("modules/about/informatics.bib")
-      bibliography$ecology <- bib2df::bib2df("modules/about/ecology.bib")
-      message("* Bibliography successfully loaded !")
-    
-  ## Id Module ----
-    IM.about = c("aboutModule", "About")
-    IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
-    IM.fill = c("fillModule", "Fill")
-    IM.EMLAL = c("EMLALModule","EML Assembly Line",
-                 "select","create","edit","make","publish")
-    IM.welcome = c("welcomeModule", "Welcome")
-  
-  ## CSS var ----
-    menuWidth = "250px"
-    
-    sidebarStyle = "overflow-y: scroll;
-                      max-height: 800px;"
-    
-    mainpanelStyle = "overflow-y: scroll;
-                      max-height: 800px;"
-    
-    inputStyle = "border: 1px solid lightgrey;
-                    margin: 5px;
-                    padding: 5px;
-                    width: 100%;"
-    
-    redButtonStyle = "color: red;"
-    
-    rightButtonStyle = "position: right;
-                        width: 100%;"
-  
   ## Global variables ----
     DP.PATH <- paste0(getwd(),"/dataPackagesOutput/emlAssemblyLine/")
     THRESHOLD = list(
@@ -90,6 +39,7 @@ options(shiny.reactlog=TRUE)
   # Utils
     library(devtools)
     library(RefManageR)
+    # library(dplyr)
 
   ## Modules assembly
   # Welcome
@@ -107,6 +57,7 @@ options(shiny.reactlog=TRUE)
       source("modules/documentation/documentation_style.R")
   # About
     source("modules/about/about.R")
+    source("modules/about/about_functions.R")
   # Utils - not GUI
     source("utils/multiApply.R")
     source("utils/reactiveTrigger.R")
@@ -115,6 +66,59 @@ options(shiny.reactlog=TRUE)
     dir.create(".cache/", recursive = TRUE, showWarnings = FALSE)
     dir.create(DP.PATH, recursive = TRUE, showWarnings = FALSE)
 
+### RESOURCES ###
+    
+  ## Guidelines ----
+    message("Loading Guidelines:")
+    
+    # Doc = Doc-only EML subspec
+      docGuideline = as.list(readRDS("resources/docGuideline.RData"))
+      message("* Doc Guideline successfully loaded !")
+    
+    # System = whole EML spec
+      systemGuideline = as.list(readRDS("resources/systemGuideline.RData"))
+      message("* System Guideline successfully loaded !")
+    
+    # Namespace Index = which namespace lead to what module
+      nsIndex <- readRDS("resources/nsIndex.RData")
+      message("* Namespaces Index successfully loaded !")
+    
+    # Bibliography - approximatively the same as 2019 master memoir
+      bibliography <- list()
+      bibliography$actors <- ReadBib("modules/about/actors.bib")
+      message("* Actors bibliography successfully loaded !")
+      bibliography$informatics <- ReadBib("modules/about/informatics.bib")
+      message("* Informatics bibliography successfully loaded !")
+      bibliography$ecology <- ReadBib("modules/about/ecology.bib")
+      message("* Ecology bibliography successfully loaded !")
+    
+  ## Id Module ----
+    IM.about = c("aboutModule", "About")
+    IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
+    IM.fill = c("fillModule", "Fill")
+    IM.EMLAL = c("EMLALModule","EML Assembly Line",
+                 "select","create","edit","make","publish")
+    IM.welcome = c("welcomeModule", "Welcome")
+    
+  ## CSS var ----
+    menuWidth = "250px"
+    
+    sidebarStyle = "overflow-y: scroll;
+                      max-height: 800px;"
+    
+    mainpanelStyle = "overflow-y: scroll;
+                      max-height: 800px;"
+    
+    inputStyle = "border: 1px solid lightgrey;
+                    margin: 5px;
+                    padding: 5px;
+                    width: 100%;"
+    
+    redButtonStyle = "color: red;"
+    
+    rightButtonStyle = "position: right;
+                        width: 100%;"
+    
 ### MISC ZONE ----
 # Tippy real examples
 # https://cran.r-project.org/web/packages/tippy/readme/README.html
