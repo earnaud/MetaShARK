@@ -29,8 +29,13 @@ createDPUI <- function(id, title, IM){
                h4("Navigation"),
                quitButton(ns(id), style = rightButtonStyle),
                saveButton(ns(id), style = rightButtonStyle),
+               actionButton(ns("nextTab"),"Next",
+                            icon = icon("arrow-right"),
+                            style = rightButtonStyle),
+               textOutput(ns("warning_data_size")),
+               textOutput(ns("overwrite")),
                style = "text-align: center; padding: 0;"
-        )
+        ) # end of column 2
       ) # end fluidPage
     ) # end return
 }
@@ -65,9 +70,14 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
              savevar$emlal$selectDP$dp_name)
   callModule(onSave, IM.EMLAL[4],
              # additional arguments
-             savevar$emlal, 
+             savevar, 
              savevar$emlal$selectDP$dp_path, 
              savevar$emlal$selectDP$dp_name)
+  observeEvent(input$nextTab, {
+    savevar$emlal$createDP$dp_data_files <- rv$dp_data_files
+    globalRV$navigate <- globalRV$navigate+1
+    globalRV$previous <- "create"
+  })
   
   # Data file upload ----
   # Add data files
@@ -118,21 +128,60 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
         
     # variable modifications
     savevar$emlal$createDP$dp_data_files <- rv$dp_data_files
-    
+
     # actions
-    if(!identical(rv$dp_data_files,
-                  data.frame()))
+    if(!identical(rv$dp_data_files, data.frame()) &&
+       !is.null(rv$dp_data_files)){
+      enable("nextTab")
       checkboxGroupInput(ns("select_data_files"),
                          "Select files to delete (all files here will be kept otherwise)",
                          choices = rv$dp_data_files$name)
+      
+    }
+    else{
+      disable("nextTab")
+      return(NULL)
+    }
   })
   
+  # Warnings ----
+  # data size
   output$warning_data_size <- renderText({
     if(sum(rv$dp_data_files$size) > THRESHOLD$dp_data_files)
       paste("WARNING:", sum(rv$dp_data_files$size),
             "are about to be duplicated for data package assembly")
     else
       ""
+  })
+  
+  # overwrite files
+  output$warning_overwrite <- renderText({
+    if(identical(dir(paste0(path,"/",dp,"/data_objects/")),
+                 character(0))
+       )
+      paste("WARNING:", "Selected files will overwrite
+            already loaded ones.")
+    else
+      ""
+  })
+  
+  # Process files ----
+  # Template table
+  observeEvent(input$nextTab, {
+    # fetch location
+    dp <- savevar$emlal$selectDP$dp_name
+    path <- savevar$emlal$selectDP$dp_path
+    
+    # copy files to <dp>_emldp/<dp>/data_objects
+    sapply(rv$dp_data_files$datapath,
+           file.copy, 
+           to = paste0(path,"/",dp,"/data_objects/"),
+           overwrite = TRUE)
+    template_table_attributes(
+      path = paste0(path,"/",dp,"/metadata_templates"),
+      data.path = paste0(path,"/",dp,"/data_objects"),
+      data.table = rv$dp_data_files$name,
+    )
   })
   
   # Output ----

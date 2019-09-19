@@ -56,6 +56,10 @@ server <- function(input,output,session){
   observeEvent(input$check,{
     browser()
   })
+  observe({
+    if(is.null(globalRV$navigate) || is.null(savevar))
+      browser()
+  })
   
   ## modules called ----
   # welcome
@@ -79,6 +83,12 @@ server <- function(input,output,session){
     savevar <-
       callModule(createDP, 
                  IM.EMLAL[4], 
+                 IM = IM.EMLAL,
+                 savevar = savevar,
+                 globalRV = globalRV)
+    savevar <-
+      callModule(templateDP, 
+                 IM.EMLAL[5], 
                  IM = IM.EMLAL,
                  savevar = savevar,
                  globalRV = globalRV)

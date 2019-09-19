@@ -30,7 +30,7 @@ options(shiny.reactlog=TRUE)
     library(shinyFiles)
     library(shinyjs)
     library(tcltk2)
-    library(tippy) 
+    library(tippy)
     
   # EML
     library(EML)
@@ -39,6 +39,7 @@ options(shiny.reactlog=TRUE)
   # Utils
     library(devtools)
     library(RefManageR)
+    library(data.table)
 
   ## Modules assembly
   # Welcome
@@ -50,6 +51,7 @@ options(shiny.reactlog=TRUE)
       source("modules/fill/EMLAL/EMLAL_functions.R")
         source("modules/fill/EMLAL/EMLAL_selectDP.R")
         source("modules/fill/EMLAL/EMLAL_createDP.R")
+        source("modules/fill/EMLAL/EMLAL_templateDP.R")
   # Documentation
     source("modules/documentation/documentation.R")
       source("modules/documentation/documentation_functions.R")
@@ -96,7 +98,7 @@ options(shiny.reactlog=TRUE)
     IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
     IM.fill = c("fillModule", "Fill")
     IM.EMLAL = c("EMLALModule","EML Assembly Line",
-                 "select","create","edit","make","publish")
+                 "select","create","template","edit","make","publish")
     IM.welcome = c("welcomeModule", "Welcome")
     
   ## CSS var ----

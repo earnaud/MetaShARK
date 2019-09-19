@@ -69,8 +69,10 @@ onSave <- function(input, output, session,
 
 # set the path and save the savevar
 saveReactive <- function(toSave, path, filename){
-  print(paste0(path,"/",filename,".RData"))
-  saveRDS(toSave, paste0(path,"/",filename,".RData"))
+  location <- paste0(path,"/",filename,".rds")
+  message("Saving current metadata as:",location,"\n",sep=" ")
+  if(file.exists(location)) file.remove(location)
+  saveRDS(toSave, location)
 }
 
 # Initialize savevar variable
@@ -144,8 +146,6 @@ createDPFolder <- function(DP.location, DP.name, data.location){
 # EAL Templates ----
 
 # Needed vars
-# - path
-# - data.path
 # - columns from table
 #   * site
 #   * lat

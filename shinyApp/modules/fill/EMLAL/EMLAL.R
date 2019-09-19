@@ -70,13 +70,17 @@ EMLAL <- function(input, output, session, IM, globalRV){
   
   # Output
   output$currentUI <- renderUI({
-      switch(globalRV$navigate,
+    switch(globalRV$navigate,
            `1` = selectDPUI(id = IM.EMLAL[3],
                             IM = IM.EMLAL,
                             title = steps[1]),
            `2` = createDPUI(id = IM.EMLAL[4],
                             IM = IM.EMLAL,
-                            title = steps[2]))
+                            title = steps[2]),
+           `3` = templateDPUI(id = IM.EMLAL[5],
+                            IM = IM.EMLAL,
+                            title = steps[3])
+                  )
   })
   
 }
