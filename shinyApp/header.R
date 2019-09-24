@@ -9,6 +9,15 @@ options(shiny.reactlog=TRUE)
       dp_data_files = 500000
     )
     HOME = fs::path_home()
+    # Date time format strings
+    DATE.FORMAT <- combn(rep(c('YYYY','MM','DD'),3),3)
+    DATE.FORMAT <- unique(as.list(as.data.frame(DATE.FORMAT[,!apply(DATE.FORMAT, 2, function(y) any(duplicated(y)))], stringsAsFactors = FALSE)))
+    DATE.FORMAT <- sapply(c('-','/',':'), function(sep)
+      sapply(DATE.FORMAT, paste, collapse = sep)
+    )
+    HOUR.FORMAT <- c(NULL, gsub("YYYY","hh", gsub("MM","mm", gsub("DD","ss", DATE.FORMAT))))
+    DATE.FORMAT <- as.vector(rbind(DATE.FORMAT, gsub('Y{4}','YY',DATE.FORMAT)))
+    DATE.FORMAT <- DATE.FORMAT[order(DATE.FORMAT, decreasing = TRUE)]
 
 ### IMPORTS ----
   #list.of.packages <- c(

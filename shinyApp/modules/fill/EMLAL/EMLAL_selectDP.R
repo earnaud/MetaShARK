@@ -309,5 +309,4 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
   
   # Output ----
   return(savevar)
-  
 }

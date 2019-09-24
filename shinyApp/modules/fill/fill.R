@@ -20,7 +20,7 @@ fill <- function(input, output, session, IM, globalRV){
   # variable initialization ----
   # save variable
   savevar <- initReactive()
-
+  
   observeEvent(globalRV$navigate,{
     savevar$emlal$step <- max(
       globalRV$navigate,

@@ -75,7 +75,7 @@ saveReactive <- function(toSave, path, filename){
   saveRDS(toSave, location)
 }
 
-# Initialize savevar variable
+# Initialize savevar variable ----
 # EMLAL module specific function
 # @param sublist: either NULL, "emlal", "metafin" to precise which sublist 
 #                 to initialize
@@ -91,20 +91,20 @@ initReactive <- function(sublist = NULL, savevar = NULL){
   
   # emlal reactivelist management
   if(is.null(sublist) || sublist == "emlal")
-    savevar$emlal <- list(
+    savevar$emlal <- reactiveValues(
       step = 0,
-      selectDP = list(
+      selectDP = reactiveValues(
         dp_name = NULL,
         dp_path = NULL
       ),
-      createDP = list(
+      createDP = reactiveValues(
         dp_data_files = NULL
       )
     )
   
   # metafin reactivelist management
   if(is.null(sublist) || sublist == "metafin")
-    savevar$metafin <- list()
+    savevar$metafin <- reactiveValues()
   
   # differential returns
   return(if(is.null(sublist))
@@ -116,6 +116,7 @@ initReactive <- function(sublist = NULL, savevar = NULL){
          )
 }
 
+# Files management ----
 # choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {
   if (exists('utils::choose.dir')) {

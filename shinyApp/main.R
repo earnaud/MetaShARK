@@ -1,4 +1,5 @@
 # main.R
+rm(list = ls())
 source("header.R")
 
 ### UI
@@ -43,7 +44,7 @@ ui <- dashboardPage(
 
 ### SERVER
 server <- function(input,output,session){
-  session$onSessionEnded(function() rm(list=ls()))
+  onStop(function() rm(list = ls()))
   session$onSessionEnded(stopApp)
   
   # Reactive values ----
