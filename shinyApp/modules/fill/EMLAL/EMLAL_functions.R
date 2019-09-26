@@ -4,37 +4,43 @@
 
 # quit dp edition
 quitButton <- function(id, style){
-  ns <- NS(id)
-  
-  actionButton(ns("quit"), "Quit",
+  actionButton("quit", "Quit",
                icon = icon("sign-out-alt"), style = style)
 }
 
 # save dp snapshot
 saveButton <- function(id, style){
-  ns <- NS(id)
-  
-  actionButton(ns("save"), "Save",
+  actionButton("save", "Save",
                icon = icon("save",class="regular"), style = style)
 }
 
+# next Tab
+nextTabButton <- function(id, style){
+  actionButton("nextTab","Next",
+               icon = icon("arrow-right"),
+               style = style)
+}
 
+# previous Tab
+prevTabButton <- function(id, style){
+  actionButton("prevTab","Previous",
+               icon = icon("arrow-left"),
+               style = style)
+}
 
 ## Associated server functions ----
 
 # on quit button 
 onQuit <- function(input, output, session, 
                    globalRV, toSave, path, filename){
-  ns <- session$ns
-  
   # modal dialog for quitting data description
   quitModal <- modalDialog(
     title = "You are leaving data description",
     "Are you sure to leave? Some of your metadata have maybe not been saved.",
     footer = tagList(
       modalButton("Cancel"),
-      actionButton(ns("save_quit_button"),"Save & Quit"),
-      actionButton(ns("quit_button"),"Quit",icon("times-circle"),
+      actionButton("save_quit_button","Save & Quit"),
+      actionButton("quit_button","Quit",icon("times-circle"),
                    style = redButtonStyle)
     )
   )
@@ -75,6 +81,25 @@ saveReactive <- function(toSave, path, filename){
   saveRDS(toSave, location)
 }
 
+# set the globalRV navigation ..
+# .. one step after
+nextTab <- function(input,output,session,
+                    globalRV, previous){
+  observeEvent(input$nextTab,{
+    globalRV$navigate <- globalRV$navigate+1
+    globalRV$previous <- previous
+  })
+  
+}
+# .. one step before
+prevTab <- function(input,output,session,
+                    globalRV, previous){
+  observeEvent(input$prevTab,{
+    globalRV$navigate <- globalRV$navigate+1
+    globalRV$previous <- previous
+  })
+}
+
 # Initialize savevar variable ----
 # EMLAL module specific function
 # @param sublist: either NULL, "emlal", "metafin" to precise which sublist 
@@ -99,7 +124,8 @@ initReactive <- function(sublist = NULL, savevar = NULL){
       ),
       createDP = reactiveValues(
         dp_data_files = NULL
-      )
+      ),
+      templateDP = reactiveValues()
     )
   
   # metafin reactivelist management
@@ -145,6 +171,23 @@ createDPFolder <- function(DP.location, DP.name, data.location){
 }
 
 # EAL Templates ----
+
+# save currently selected attribute
+saveAttribute <- function(savevar, rv){
+  # write to savevar (app save)
+  if(!is.null(savevar$emlal$templateDP[[rv$current_file]]))
+    savevar$emlal$templateDP[[rv$current_file]] <- reactiveValues()
+  toSave <- sapply(reactiveValuesToList(rv$save), 
+                   function(r) r())
+  savevar$emlal$templateDP[[rv$current_file]][[rv$current_attribute]] <- toSave
+
+  # write to data frame (file save)
+  ind <- match(rv$current_attribute,
+               rv$df_file[,"attributeName"])
+  rv$df_file[ind,] <- toSave
+  
+  return(list(s = savevar, r = rv))
+}
 
 # Needed vars
 # - columns from table

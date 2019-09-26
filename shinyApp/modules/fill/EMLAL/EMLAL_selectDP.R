@@ -53,10 +53,10 @@ selectDPUI <- function(id, title, width=12, IM){
                                  c("CCBY","CC0"),
                                  multiple = FALSE)
                  ),
-                 "license-help",
-                 "CC0: public domain.  
-                 CC-BY-4.0: open source authorship.
-                 For more details, visit Creative Commons"
+                 HTML("License: <br>
+                      <b>CC0:</b> public domain. <br>
+                      <b>CC-BY-4.0:</b> open source with authorship. <br>
+                      For more details, visit Creative Commons.")
                ),
                # DP creation
                actionButton(ns("dp_create"),"Create")

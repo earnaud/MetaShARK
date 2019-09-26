@@ -15,7 +15,7 @@ options(shiny.reactlog=TRUE)
     DATE.FORMAT <- sapply(c('-','/',':'), function(sep)
       sapply(DATE.FORMAT, paste, collapse = sep)
     )
-    HOUR.FORMAT <- c(NULL, gsub("YYYY","hh", gsub("MM","mm", gsub("DD","ss", DATE.FORMAT))))
+    HOUR.FORMAT <- c(NA, gsub("YYYY","hh", gsub("MM","mm", gsub("DD","ss", DATE.FORMAT))))
     DATE.FORMAT <- as.vector(rbind(DATE.FORMAT, gsub('Y{4}','YY',DATE.FORMAT)))
     DATE.FORMAT <- DATE.FORMAT[order(DATE.FORMAT, decreasing = TRUE)]
 

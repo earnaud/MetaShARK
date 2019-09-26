@@ -29,9 +29,10 @@ createDPUI <- function(id, title, IM){
                h4("Navigation"),
                quitButton(ns(id), style = rightButtonStyle),
                saveButton(ns(id), style = rightButtonStyle),
-               actionButton(ns("nextTab"),"Next",
-                            icon = icon("arrow-right"),
-                            style = rightButtonStyle),
+               nextTabButton(ns(id), style = rightButtonStyle),
+               # actionButton(ns("nextTab"),"Next",
+               #              icon = icon("arrow-right"),
+               #              style = rightButtonStyle),
                textOutput(ns("warning_data_size")),
                textOutput(ns("overwrite")),
                style = "text-align: center; padding: 0;"
@@ -74,11 +75,6 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
              savevar, 
              savevar$emlal$selectDP$dp_path, 
              savevar$emlal$selectDP$dp_name)
-  # observeEvent(input$nextTab, {
-  #   savevar$emlal$createDP$dp_data_files <- rv$data_files
-  #   globalRV$navigate <- globalRV$navigate+1
-  #   globalRV$previous <- "create"
-  # })
   
   # Data file upload ----
   # Add data files
@@ -173,13 +169,13 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
     path <- savevar$emlal$selectDP$dp_path
     
     # actions
-    # copy files to <dp>_emldp/<dp>/data_objects
-    tmp <- savevar$emlal$createDP$dp_data_files
+    # -- copy files to <dp>_emldp/<dp>/data_objects
     sapply(rv$data_files$datapath,
            file.copy, 
            to = paste0(path,"/",dp,"/data_objects/"),
            overwrite = TRUE)
-    # savevar$emlal$createDP$dp_data_files$datapath <- 
+    # -- modify paths in save variable
+    tmp <- savevar$emlal$createDP$dp_data_files
     tmp$datapath <- sapply(rv$data_files$name,
              function(dpname){
                force(dpname)
@@ -195,7 +191,7 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
                           dpname)
                       )
              })
-    browser()
+    # browser()
     savevar$emlal$createDP$dp_data_files <- tmp
     
     template_table_attributes(
