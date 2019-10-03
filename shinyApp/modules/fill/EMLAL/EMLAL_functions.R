@@ -28,6 +28,37 @@ prevTabButton <- function(id, style){
                style = style)
 }
 
+# custom units inputs of EAL templates
+customUnitsUI <- function(input_id, customUnitsTable){
+  ns <- NS(input_id)
+  tagList(
+    column(1),
+    column(11,
+           lapply(c("id","unitType","parentSI","multiplierToSI","description"),
+                  function(field){
+                    id <- ns(paste0("custom_",field))
+                    cat("Enter:",id,"\n")
+                    switch(field,
+                           id = textInput(id,
+                                          span("Type an ID for your custom unit", style = redButtonStyle),
+                                          placeholder = "e.g.  gramsPerSquaredMeterPerCentimeter "),
+                           unitType = textInput(id,
+                                                span("Type the scientific dimension using this unit in your dataset", style = redButtonStyle),
+                                                placeholder = "e.g. mass, areal mass density per length"),
+                           parentSI = selectInput(id,
+                                                  span("Select the parent SI from which your unit is derivated",style = redButtonStyle),
+                                                  unique(get_unitList()$units$parentSI)),
+                           multiplierToSI = numericInput(id,
+                                                         span("Type the appropriate numeric to multiply a value by to perform conversion to SI",style = redButtonStyle),
+                                                         value = 1),
+                           description = textAreaInput(id,
+                                                       "Describe your custom unit")
+                    )
+                  }), # end of lapply
+         )
+    ) # end of taglist
+}
+
 ## Associated server functions ----
 
 # on quit button 
@@ -172,22 +203,58 @@ createDPFolder <- function(DP.location, DP.name, data.location){
 
 # EAL Templates ----
 
-# save currently selected attribute
-saveAttribute <- function(savevar, rv){
-  # write to savevar (app save)
-  if(!is.null(savevar$emlal$templateDP[[rv$current_file]]))
-    savevar$emlal$templateDP[[rv$current_file]] <- reactiveValues()
-  toSave <- sapply(reactiveValuesToList(rv$save), 
-                   function(r) r())
-  savevar$emlal$templateDP[[rv$current_file]][[rv$current_attribute]] <- toSave
-
-  # write to data frame (file save)
-  ind <- match(rv$current_attribute,
-               rv$df_file[,"attributeName"])
-  rv$df_file[ind,] <- toSave
+# very local function
+saveAttribute <- function(RV){
+  # for this row
+  default_row <- RV$df_file[RV$df_file[,1] == RV$current_attribute,]
+  filled_row <- reactiveValuesToList(RV$save)
+  # filled_row is filled with its reactive's values
+  default_row[names(filled_row)] <- sapply(names(filled_row), 
+                                           function(ff) 
+                                             filled_row[[ff]]()
+                                           )
+  RV$df_file[RV$df_file[,1] == RV$current_attribute,] <- default_row
   
-  return(list(s = savevar, r = rv))
+  if(any(grepl("date",names(filled_row) ) ) )
+     browser()
+  
+  return(RV)
 }
+
+# build a unique id from file, attribute and colname - attribute_tables
+buildInputID <- function(filename, attribute, colname){
+  paste(filename, attribute, colname, sep = "_")
+}
+
+# customUnits server
+customUnits <- function(input, output, session,
+                        savevar){
+  ns <- session$ns
+  if(is.null(savevar$emlal$templateDP$customUnitsTable))
+    savevar$emlal$templateDP$customUnitsTable <- fread(paste(savevar$emlal$selectDP$dp_path,
+                                                             savevar$emlal$selectDP$dp_name,
+                                                             "metadata_templates",
+                                                             "custom_units.txt",
+                                                             sep = "/")
+                                                       )
+  # end of fread
+  customUnitsTable <- savevar$emlal$templateDP$customUnitsTable
+  # Custome Units Reactive Values
+  curv <- reactiveValues()
+  
+  lapply(colnames(customUnitsTable),
+         function(field){
+           id <- ns(paste0("custom_",field))
+           cat("Observe:",id,"\n")
+           curv[[id]] <- reactive({ input[[id]] })
+         })
+  
+  # output
+  cat("Output:",names(curv),"\n")
+  
+  return(curv)
+}
+
 
 # Needed vars
 # - columns from table
