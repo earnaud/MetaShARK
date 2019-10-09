@@ -4,26 +4,34 @@
 
 # quit dp edition
 quitButton <- function(id, style){
-  actionButton("quit", "Quit",
+  ns <- NS(id)
+  
+  actionButton(ns("quit"), "Quit",
                icon = icon("sign-out-alt"), style = style)
 }
 
 # save dp snapshot
 saveButton <- function(id, style){
-  actionButton("save", "Save",
+  ns <- NS(id)
+  
+  actionButton(ns("save"), "Save",
                icon = icon("save",class="regular"), style = style)
 }
 
 # next Tab
 nextTabButton <- function(id, style){
-  actionButton("nextTab","Next",
+  ns <- NS(id)
+  
+  actionButton(ns("nextTab"),"Next",
                icon = icon("arrow-right"),
                style = style)
 }
 
 # previous Tab
 prevTabButton <- function(id, style){
-  actionButton("prevTab","Previous",
+  ns <- NS(id)
+  
+  actionButton(ns("prevTab"),"Previous",
                icon = icon("arrow-left"),
                style = style)
 }
@@ -213,31 +221,31 @@ saveInput <- function(RV){
       ]
   
   # save potential custom units
-  CU <- printReactiveValues(RV$customUnits)[
-    names(RV$customUnitsTable)]
-  if(length(CU) != 0){
-    if(all(sapply(RV$customUnitsTable, is.na))){
-      RV$customUnitsTable <- printReactiveValues(
-        RV$customUnits)[names(RV$customUnitsTable)]
-    }
-    else if(!CU["id"] %in% RV$customUnitsTable["id"]){
-      RV$customUnitsTable <- rbind(
-        RV$customUnitsTable,
-        printReactiveValues(RV$customUnits)[
-          names(RV$customUnitsTable)]
-      )
-    }
-    else
-      message(CU["id"], "is already saved")
-  }
-  
+  # CU <- printReactiveValues(RV$customUnits)[
+  #   names(RV$customUnitsTable)]
+  # if(length(CU) != 0){
+  #   if(all(sapply(RV$customUnitsTable, is.na))){
+  #     RV$customUnitsTable <- printReactiveValues(
+  #       RV$customUnits)[names(RV$customUnitsTable)]
+  #   }
+  #   else if(!CU["id"] %in% RV$customUnitsTable["id"]){
+  #     RV$customUnitsTable <- rbind(
+  #       RV$customUnitsTable,
+  #       printReactiveValues(RV$customUnits)[
+  #         names(RV$customUnitsTable)]
+  #     )
+  #   }
+  #   else
+  #     message(CU["id"], "is already saved")
+  # }
+  # 
   # (re)set local save reactive value with NULL values
-  sapply(colnames(rv$attributesTable), function(nn){
-    rv$attributes[[nn]] <- NULL
+  sapply(colnames(RV$attributesTable), function(nn){
+    RV$attributes[[nn]] <- NULL
   })
-  sapply(colnames(rv$customUnitsTable), function(nn){
-    rv$customUnits[[nn]] <- NULL
-  })
+  # sapply(colnames(rv$customUnitsTable), function(nn){
+  #   rv$customUnits[[nn]] <- NULL
+  # })
   
   return(RV)
 }

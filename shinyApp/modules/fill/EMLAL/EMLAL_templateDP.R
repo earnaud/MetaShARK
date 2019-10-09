@@ -68,28 +68,30 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
     browser()
   })
   # variable initialization ----
+  
+  # if(is.null(savevar$emlal$templateDP$customUnitsTable)){
+  #   tmp <- fread(paste(savevar$emlal$selectDP$dp_path,
+  #                      savevar$emlal$selectDP$dp_name,
+  #                      "metadata_templates",
+  #                      "custom_units.txt",
+  #                      sep = "/"),
+  #                data.table = FALSE)
+  #   if(min(dim(tmp)) == 0) tmp <- tmp[1,]
+  #   savevar$emlal$templateDP$customUnitsTable <- rv$customUnitsTable <- tmp
+  # }
+  
   # main local reactiveValues
   rv <- reactiveValues(
     # local save
     attributes = reactiveValues(),
-    customUnits = reactiveValues()
+    # , customUnits = reactiveValues()
     # utility
+    ui = character()
   )
   
   observe({
     req(savevar$emlal$createDP$dp_data_files)
     rv$files_names <- savevar$emlal$createDP$dp_data_files$name
-    
-    if(is.null(savevar$emlal$templateDP$customUnitsTable)){
-      tmp <- fread(paste(savevar$emlal$selectDP$dp_path,
-                         savevar$emlal$selectDP$dp_name,
-                         "metadata_templates",
-                         "custom_units.txt",
-                         sep = "/"),
-                   data.table = FALSE)
-      if(min(dim(tmp)) == 0) tmp <- tmp[1,]
-      savevar$emlal$templateDP$customUnitsTable <- rv$customUnitsTable <- tmp
-    }
   })
   observeEvent(rv$files_names, {
     req(rv$files_names)
@@ -98,7 +100,9 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   
   # on file change
   observeEvent(rv$current_file, {
-    req(rv$current_file, rv$customUnitsTable) # already req savevar$..$dp_data_files
+    req(rv$current_file
+        # , rv$customUnitsTable
+        ) # already req savevar$..$dp_data_files
     toRead <- savevar$emlal$createDP$dp_data_files
     toRead <- toRead$metadatapath[
       match(rv$current_file, toRead$name)
@@ -109,25 +113,29 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
                                 na.strings = NULL)
     rv$attributesTable[is.na(rv$attributesTable)] <- ""
     # get current attribute
+    rv$current_attribute <- 0 # trick: trigger rv$current_attribute -dependant observers
     rv$current_attribute <- 1
   })
   observeEvent(rv$current_attribute, {
-    req(rv$attributesTable, rv$customUnitsTable)
-    print("RV SET TO NULL") # ----
-    
-    # (re)set local save reactive value with NULL values
-    sapply(colnames(rv$attributesTable), function(nn){
-      rv$attributes[[nn]] <- NULL
-    })
-    sapply(colnames(rv$customUnitsTable), function(nn){
-      rv$customUnits[[nn]] <- NULL
-    })
+    req(rv$attributesTable)
+    tmpAttributes <- rv$attributesTable[rv$current_attribute,]
+    rv$ui <- names(tmpAttributes)
+    rv$ui <- rv$ui[rv$ui != "attributeName"]
+    # units case
+    if(tmpAttributes["unit"] == "")
+      rv$ui <- rv$ui[!grepl("unit", rv$ui)]
+    # date case
+    if(tmpAttributes[rv$ui[grepl("date", rv$ui)] ] == "")
+      rv$ui <- rv$ui[!grepl("date", rv$ui)]
+    # browser()
   })
   
   # Navigation buttons ----
   # ** files
   observeEvent(input$file_prev,{
-    req(rv$attributes, rv$customUnits)
+    req(rv$attributes
+        # , rv$customUnits
+        )
     cur_ind <- match(rv$current_file, rv$files_names)
     if(cur_ind > 1){
       # save metadata
@@ -137,7 +145,9 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
     }
   })
   observeEvent(input$file_next,{
-    req(rv$attributes, rv$customUnits)
+    req(rv$attributes
+        # , rv$customUnits
+    )
     cur_ind <- match(rv$current_file, rv$files_names)
     if(cur_ind < length(rv$files_names) ){
       # save metadata
@@ -148,7 +158,9 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   })
   # ** attribute
   observeEvent(input$attribute_prev,{
-    req(rv$attributes, rv$customUnits)
+    req(rv$attributes
+        # , rv$customUnits
+    )
     if(rv$current_attribute > 1){
       # save metadata
       rv <- saveInput(rv)
@@ -157,23 +169,15 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
     }
   })
   observeEvent(input$attribute_next,{
-    req(rv$attributes, rv$customUnits)
+    req(rv$attributes
+        # , rv$customUnits
+    )
     if(rv$current_attribute < length(rv$attributesTable$attributeName)){
       # save metadata
       rv <- saveInput(rv)
       # change attribute
       rv$current_attribute <- rv$current_attribute + 1
     }
-  })
-  
-  # regular saves in savevar - triggered in saveInput()
-  observeEvent({
-    input$file_prev
-    input$file_next
-    input$attribute_prev
-    input$attribute_next
-  },{
-    savevar$emlal$templateDP[[rv$current_file]] <- rv$attributesTable
   })
   
   # outputs
@@ -209,17 +213,30 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   callModule(prevTab, IM.EMLAL[5],
              globalRV, "template")
   
+  # Saves ----
+  
+  # regular saves in savevar - triggered in saveInput()
+  observeEvent({
+    input$file_prev
+    input$file_next
+    input$attribute_prev
+    input$attribute_next
+  },{
+    savevar$emlal$templateDP[[rv$current_file]] <- rv$attributesTable
+  })
+  
+  
   
   # Procedurals / ----
   # / UI ----
   output$edit_template <- renderUI({
+    req(rv$ui)
+    
     # actions
     tagList(
       # write each attribute's characteristic
-      lapply(colnames(rv$attributesTable), function(colname) {
+      lapply(rv$ui, function(colname) {
         # prepare var
-        if(length(rv$attributesTable[rv$current_attribute, colname]) == 0)
-          browser()
         saved_value <- rv$attributesTable[rv$current_attribute, colname]
         
         # UI
@@ -229,38 +246,37 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
                class = HTML(paste("<b>Detected class:</b>", as.vector(saved_value) ) ),
                unit = tagList(selectInput(ns(colname), 
                                           span("Existing unit", style=redButtonStyle),
-                                          c(saved_value,UNIT.LIST),
-                                          selected = if(saved_value == "custom")
-                                            "custom"
-               ), # end of selectInput
-               shinyjs::hidden(
-                 div(id = "custom_units_ui",
-                     column(1),
-                     column(11,
-                            tagList(
-                              lapply(names(rv$customUnitsTable),
-                                     function(field){
-                                       switch(field,
-                                              id = textInput(ns(field),
-                                                             span("Type an ID for your custom unit", style = redButtonStyle),
-                                                             placeholder = "e.g.  gramsPerSquaredMeterPerCentimeter "),
-                                              unitType = textInput(ns(field),
-                                                                   span("Type the scientific dimension using this unit in your dataset", style = redButtonStyle),
-                                                                   placeholder = "e.g. mass, areal mass density per length"),
-                                              parentSI = selectInput(ns(field),
-                                                                     span("Select the parent SI from which your unit is derivated",style = redButtonStyle),
-                                                                     unique(get_unitList()$units$parentSI)),
-                                              multiplierToSI = numericInput(ns(field),
-                                                                            span("Type the appropriate numeric to multiply a value by to perform conversion to SI",style = redButtonStyle),
-                                                                            value = 1),
-                                              description = textAreaInput(ns(field),
-                                                                          "Describe your custom unit")
-                                       )
-                                     }) # end of lapply
-                            ) # end of column
-                     )  # end of CU taglist
-                 ) # end of CU div
-               ) # end of hidden
+                                          c(saved_value, UNIT.LIST),
+                                          selected = saved_value
+               ) # end of selectInput
+               # , shinyjs::hidden(
+               #   div(id = "custom_units_ui",
+               #       column(1),
+               #       column(11,
+               #              tagList(
+               #                lapply(names(rv$customUnitsTable),
+               #                       function(field){
+               #                         switch(field,
+               #                                id = textInput(ns(field),
+               #                                               span("Type an ID for your custom unit", style = redButtonStyle),
+               #                                               placeholder = "e.g.  gramsPerSquaredMeterPerCentimeter "),
+               #                                unitType = textInput(ns(field),
+               #                                                     span("Type the scientific dimension using this unit in your dataset", style = redButtonStyle),
+               #                                                     placeholder = "e.g. mass, areal mass density per length"),
+               #                                parentSI = selectInput(ns(field),
+               #                                                       span("Select the parent SI from which your unit is derivated",style = redButtonStyle),
+               #                                                       unique(get_unitList()$units$parentSI)),
+               #                                multiplierToSI = numericInput(ns(field),
+               #                                                              span("Type the appropriate numeric to multiply a value by to perform conversion to SI",style = redButtonStyle),
+               #                                                              value = 1),
+               #                                description = textAreaInput(ns(field),
+               #                                                            "Describe your custom unit")
+               #                         )
+               #                       }) # end of lapply
+               #              ) # end of column
+               #       )  # end of CU taglist
+               #   ) # end of CU div
+               # ) # end of hidden
                ), # end of unit taglist
                dateTimeFormatString = tagList(selectInput(ns( paste0(colname,"_date") ),
                                                           span("Existing date format",
@@ -283,16 +299,15 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
         ) # end of switch
       }) # end of lapply colname
     ) # end of tagList
-  })
+  }) # end of UI
   
   
   # / Servers / ----
   observe({
-    req( any(names(rv$attributes) %in% names(input)) )
-    print("SET TO REACTIVES")
+    req( any(rv$ui %in% names(input)) )
     
     # / attributes ----
-    sapply(names(rv$attributes), function(rvName) {
+    sapply(names(rv$attributesTable), function(rvName) {
       # prepare variable
       # two different names: ids from input can be suffixed
       inputNames <- names(input)[
@@ -304,17 +319,17 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
       
       # check corresponding input
       if(length(inputNames) != 0){
-        
         if(
-          (grepl("attributeDef|missingValue", rvName))
-          || (grepl("date", inputNames)
-              && grepl(".+", rv$attributesTable[rv$current_attribute, rvName] ))
-          || (grepl("^unit", inputNames)
-              && grepl(".+", rv$attributesTable[rv$current_attribute, rvName] ))
+          rvName %in% rv$ui
+          # (grepl("attributeDef|missingValue", rvName))
+          # || (grepl("date", inputNames)
+          #     && grepl(".+", rv$attributesTable[rv$current_attribute, rvName] ))
+          # || (grepl("^unit", inputNames)
+          #     && grepl(".+", rv$attributesTable[rv$current_attribute, rvName] ))
         ){
           # show UI
-          sapply(inputNames, shinyjs::showElement)
-# cat("Show:", inputNames,"\n")
+          sapply(inputNames, shinyjs::show)
+cat("Show:", rvName,"\n")
           
           # Input UI yet exists: create eventReactive
           rv$attributes[[rvName]] <- eventReactive({
@@ -366,8 +381,9 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
         }
         else{
           # hide UI
-          sapply(inputNames, shinyjs::hideElement)
-# cat("Hide:", inputNames,"\n")
+          sapply(inputNames, shinyjs::hide)
+cat("Hide:", rvName,"\n")
+
           # set reactiveValue to NULL
           rv$attributes[[rvName]] <- rv$attributesTable[rv$current_attribute, rvName]
         }
@@ -377,31 +393,31 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
       }
     }) # end sapply
     
-    # / custom units ----
+    # / custom units 
     # show/hide custom units
-    observeEvent(input$unit,{
-      if(
-        input$unit == "custom"
-      ){
-        # show UI
-        show("custom_units_ui")
-        
-        # set reactives
-        lapply(customFields, function(cc){
-          rv$customUnits[[cc]] <- eventReactive(input[[cc]],{
-            input[[cc]]
-          }) # end of eventReactive
-        }) # end of lapply
-      }
-      else{
-        # hide UI
-        hide("custom_units_ui")
-        
-        # set reactives to NULL
-        rv$customUnits <- reactiveValues()
-      }
-    })
-    
+    # observeEvent(input$unit,{
+    #   if(
+    #     input$unit == "custom"
+    #   ){
+    #     # show UI
+    #     show("custom_units_ui")
+    #     
+    #     # set reactives
+    #     lapply(customFields, function(cc){
+    #       rv$customUnits[[cc]] <- eventReactive(input[[cc]],{
+    #         input[[cc]]
+    #       }) # end of eventReactive
+    #     }) # end of lapply
+    #   }
+    #   else{
+    #     # hide UI
+    #     hide("custom_units_ui")
+    #     
+    #     # set reactives to NULL
+    #     rv$customUnits <- reactiveValues()
+    #   }
+    # })
+    # 
   })
   
   # Output ----
