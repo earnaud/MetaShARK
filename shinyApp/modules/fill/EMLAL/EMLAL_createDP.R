@@ -181,7 +181,6 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
                force(dpname)
                paste0(path,"/",dp,"/data_objects/",dpname)
              })
-    # savevar$emlal$createDP$dp_data_files$metadatapath <- 
     tmp$metadatapath <- sapply(rv$data_files$name,
              function(dpname){
                force(dpname)
@@ -191,19 +190,18 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
                           dpname)
                       )
              })
-    # browser()
     savevar$emlal$createDP$dp_data_files <- tmp
     
+    # EMLAL templating function
     template_table_attributes(
       path = paste0(path,"/",dp,"/metadata_templates"),
       data.path = paste0(path,"/",dp,"/data_objects"),
       data.table = rv$data_files$name,
     )
     
-    # save data and move
+    # move on
     globalRV$navigate <- globalRV$navigate+1
     globalRV$previous <- "create"
-    # savevar$emlal$createDP$dp_data_files <- rv$data_files
   })
   
   # Output ----

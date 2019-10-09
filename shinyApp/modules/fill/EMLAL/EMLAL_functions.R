@@ -204,19 +204,40 @@ createDPFolder <- function(DP.location, DP.name, data.location){
 # EAL Templates ----
 
 # very local function
-saveAttribute <- function(RV){
-  # for this row
-  default_row <- RV$df_file[RV$df_file[,1] == RV$current_attribute,]
-  filled_row <- reactiveValuesToList(RV$save)
-  # filled_row is filled with its reactive's values
-  default_row[names(filled_row)] <- sapply(names(filled_row), 
-                                           function(ff) 
-                                             filled_row[[ff]]()
-                                           )
-  RV$df_file[RV$df_file[,1] == RV$current_attribute,] <- default_row
+saveInput <- function(RV){
+  # save attributes
+  RV$attributesTable[
+    RV$current_attribute,
+    ] <- printReactiveValues(RV$attributes)[
+      names(RV$attributesTable)
+      ]
   
-  if(any(grepl("date",names(filled_row) ) ) )
-     browser()
+  # save potential custom units
+  CU <- printReactiveValues(RV$customUnits)[
+    names(RV$customUnitsTable)]
+  if(length(CU) != 0){
+    if(all(sapply(RV$customUnitsTable, is.na))){
+      RV$customUnitsTable <- printReactiveValues(
+        RV$customUnits)[names(RV$customUnitsTable)]
+    }
+    else if(!CU["id"] %in% RV$customUnitsTable["id"]){
+      RV$customUnitsTable <- rbind(
+        RV$customUnitsTable,
+        printReactiveValues(RV$customUnits)[
+          names(RV$customUnitsTable)]
+      )
+    }
+    else
+      message(CU["id"], "is already saved")
+  }
+  
+  # (re)set local save reactive value with NULL values
+  sapply(colnames(rv$attributesTable), function(nn){
+    rv$attributes[[nn]] <- NULL
+  })
+  sapply(colnames(rv$customUnitsTable), function(nn){
+    rv$customUnits[[nn]] <- NULL
+  })
   
   return(RV)
 }
@@ -276,3 +297,12 @@ r2js.boolean <- function(condition){
   return(tolower(as.character(condition)))
 }
 
+printReactiveValues <- function(values){
+  sapply(names(values), 
+         function(nn) 
+           if(is.reactive(values[[nn]]))
+             values[[nn]]()
+         else
+           values[[nn]]
+  )
+}
