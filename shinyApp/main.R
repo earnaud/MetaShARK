@@ -1,4 +1,5 @@
 # main.R
+rm(list = ls())
 source("header.R")
 
 ### UI
@@ -43,7 +44,7 @@ ui <- dashboardPage(
 
 ### SERVER
 server <- function(input,output,session){
-  session$onSessionEnded(function() rm(list=ls()))
+  onStop(function() rm(list = ls()))
   session$onSessionEnded(stopApp)
   
   # Reactive values ----
@@ -55,6 +56,10 @@ server <- function(input,output,session){
   # DEV: do things by clicking a button
   observeEvent(input$check,{
     browser()
+  })
+  observe({
+    if(is.null(globalRV$navigate) || is.null(savevar))
+      browser()
   })
   
   ## modules called ----
@@ -79,6 +84,12 @@ server <- function(input,output,session){
     savevar <-
       callModule(createDP, 
                  IM.EMLAL[4], 
+                 IM = IM.EMLAL,
+                 savevar = savevar,
+                 globalRV = globalRV)
+    savevar <-
+      callModule(templateDP, 
+                 IM.EMLAL[5], 
                  IM = IM.EMLAL,
                  savevar = savevar,
                  globalRV = globalRV)

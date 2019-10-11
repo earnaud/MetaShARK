@@ -53,10 +53,10 @@ selectDPUI <- function(id, title, width=12, IM){
                                  c("CCBY","CC0"),
                                  multiple = FALSE)
                  ),
-                 "license-help",
-                 "CC0: public domain.  
-                 CC-BY-4.0: open source authorship.
-                 For more details, visit Creative Commons"
+                 HTML("License: <br>
+                      <b>CC0:</b> public domain. <br>
+                      <b>CC-BY-4.0:</b> open source with authorship. <br>
+                      For more details, visit Creative Commons.")
                ),
                # DP creation
                actionButton(ns("dp_create"),"Create")
@@ -232,6 +232,11 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
     message("Creating:",path,"\n", sep = "")
     
     # actions
+    rv$dp_list <- c(rv$dp_list,dp)
+    
+    globalRV$navigate <- globalRV$navigate+1
+    globalRV$previous <- "create"
+    
     dir.create(path)
     saveReactive(savevar, path, dp) # initial "commit"
     template_directories(
@@ -242,10 +247,6 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
       path,
       license
     )
-    
-    rv$dp_list <- c(rv$dp_list,dp)
-    globalRV$navigate <- globalRV$navigate+1
-    globalRV$previous <- "create"
   })
   
   # Load DP
@@ -261,8 +262,10 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
     
     # actions
     savevar$emlal <- initReactive("emlal", savevar)
-    savevar$emlal <- readRDS(paste0(path,"/",dp,".RData"))$emlal
-    globalRV$navigate <- savevar$emlal$step # resume where max reached
+    savevar$emlal <- readRDS(paste0(path,"/",dp,".rds"))$emlal
+    globalRV$navigate <- ifelse(savevar$emlal$step > 1, # resume where max reached
+                                savevar$emlal$step,
+                                globalRV$navigate+1)
     globalRV$previous <- "load"
   })
   
@@ -306,5 +309,4 @@ selectDP <- function(input, output, session, IM, DP.path, savevar, globalRV){
   
   # Output ----
   return(savevar)
-  
 }

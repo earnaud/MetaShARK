@@ -18,23 +18,68 @@ saveButton <- function(id, style){
                icon = icon("save",class="regular"), style = style)
 }
 
+# next Tab
+nextTabButton <- function(id, style){
+  ns <- NS(id)
+  
+  actionButton(ns("nextTab"),"Next",
+               icon = icon("arrow-right"),
+               style = style)
+}
 
+# previous Tab
+prevTabButton <- function(id, style){
+  ns <- NS(id)
+  
+  actionButton(ns("prevTab"),"Previous",
+               icon = icon("arrow-left"),
+               style = style)
+}
+
+# custom units inputs of EAL templates
+customUnitsUI <- function(input_id, customUnitsTable){
+  ns <- NS(input_id)
+  tagList(
+    column(1),
+    column(11,
+           lapply(c("id","unitType","parentSI","multiplierToSI","description"),
+                  function(field){
+                    id <- ns(paste0("custom_",field))
+                    cat("Enter:",id,"\n")
+                    switch(field,
+                           id = textInput(id,
+                                          span("Type an ID for your custom unit", style = redButtonStyle),
+                                          placeholder = "e.g.  gramsPerSquaredMeterPerCentimeter "),
+                           unitType = textInput(id,
+                                                span("Type the scientific dimension using this unit in your dataset", style = redButtonStyle),
+                                                placeholder = "e.g. mass, areal mass density per length"),
+                           parentSI = selectInput(id,
+                                                  span("Select the parent SI from which your unit is derivated",style = redButtonStyle),
+                                                  unique(get_unitList()$units$parentSI)),
+                           multiplierToSI = numericInput(id,
+                                                         span("Type the appropriate numeric to multiply a value by to perform conversion to SI",style = redButtonStyle),
+                                                         value = 1),
+                           description = textAreaInput(id,
+                                                       "Describe your custom unit")
+                    )
+                  }), # end of lapply
+         )
+    ) # end of taglist
+}
 
 ## Associated server functions ----
 
 # on quit button 
 onQuit <- function(input, output, session, 
                    globalRV, toSave, path, filename){
-  ns <- session$ns
-  
   # modal dialog for quitting data description
   quitModal <- modalDialog(
     title = "You are leaving data description",
     "Are you sure to leave? Some of your metadata have maybe not been saved.",
     footer = tagList(
       modalButton("Cancel"),
-      actionButton(ns("save_quit_button"),"Save & Quit"),
-      actionButton(ns("quit_button"),"Quit",icon("times-circle"),
+      actionButton("save_quit_button","Save & Quit"),
+      actionButton("quit_button","Quit",icon("times-circle"),
                    style = redButtonStyle)
     )
   )
@@ -69,11 +114,32 @@ onSave <- function(input, output, session,
 
 # set the path and save the savevar
 saveReactive <- function(toSave, path, filename){
-  print(paste0(path,"/",filename,".RData"))
-  saveRDS(toSave, paste0(path,"/",filename,".RData"))
+  location <- paste0(path,"/",filename,".rds")
+  message("Saving current metadata as:",location,"\n",sep=" ")
+  if(file.exists(location)) file.remove(location)
+  saveRDS(toSave, location)
 }
 
-# Initialize savevar variable
+# set the globalRV navigation ..
+# .. one step after
+nextTab <- function(input,output,session,
+                    globalRV, previous){
+  observeEvent(input$nextTab,{
+    globalRV$navigate <- globalRV$navigate+1
+    globalRV$previous <- previous
+  })
+  
+}
+# .. one step before
+prevTab <- function(input,output,session,
+                    globalRV, previous){
+  observeEvent(input$prevTab,{
+    globalRV$navigate <- globalRV$navigate-1
+    globalRV$previous <- previous
+  })
+}
+
+# Initialize savevar variable ----
 # EMLAL module specific function
 # @param sublist: either NULL, "emlal", "metafin" to precise which sublist 
 #                 to initialize
@@ -89,20 +155,21 @@ initReactive <- function(sublist = NULL, savevar = NULL){
   
   # emlal reactivelist management
   if(is.null(sublist) || sublist == "emlal")
-    savevar$emlal <- list(
+    savevar$emlal <- reactiveValues(
       step = 0,
-      selectDP = list(
+      selectDP = reactiveValues(
         dp_name = NULL,
         dp_path = NULL
       ),
-      createDP = list(
+      createDP = reactiveValues(
         dp_data_files = NULL
-      )
+      ),
+      templateDP = reactiveValues()
     )
   
   # metafin reactivelist management
   if(is.null(sublist) || sublist == "metafin")
-    savevar$metafin <- list()
+    savevar$metafin <- reactiveValues()
   
   # differential returns
   return(if(is.null(sublist))
@@ -114,6 +181,7 @@ initReactive <- function(sublist = NULL, savevar = NULL){
          )
 }
 
+# Files management ----
 # choose directory function
 chooseDirectory = function(caption = 'Select data directory', default = "~/") {
   if (exists('utils::choose.dir')) {
@@ -143,9 +211,81 @@ createDPFolder <- function(DP.location, DP.name, data.location){
 
 # EAL Templates ----
 
+# very local function
+saveInput <- function(RV){
+  # save attributes
+  RV$attributesTable[
+    RV$current_attribute,
+    ] <- printReactiveValues(RV$attributes)[
+      names(RV$attributesTable)
+      ]
+  
+  # save potential custom units
+  # CU <- printReactiveValues(RV$customUnits)[
+  #   names(RV$customUnitsTable)]
+  # if(length(CU) != 0){
+  #   if(all(sapply(RV$customUnitsTable, is.na))){
+  #     RV$customUnitsTable <- printReactiveValues(
+  #       RV$customUnits)[names(RV$customUnitsTable)]
+  #   }
+  #   else if(!CU["id"] %in% RV$customUnitsTable["id"]){
+  #     RV$customUnitsTable <- rbind(
+  #       RV$customUnitsTable,
+  #       printReactiveValues(RV$customUnits)[
+  #         names(RV$customUnitsTable)]
+  #     )
+  #   }
+  #   else
+  #     message(CU["id"], "is already saved")
+  # }
+  # 
+  # (re)set local save reactive value with NULL values
+  sapply(colnames(RV$attributesTable), function(nn){
+    RV$attributes[[nn]] <- NULL
+  })
+  # sapply(colnames(rv$customUnitsTable), function(nn){
+  #   rv$customUnits[[nn]] <- NULL
+  # })
+  
+  return(RV)
+}
+
+# build a unique id from file, attribute and colname - attribute_tables
+buildInputID <- function(filename, attribute, colname){
+  paste(filename, attribute, colname, sep = "_")
+}
+
+# customUnits server
+customUnits <- function(input, output, session,
+                        savevar){
+  ns <- session$ns
+  if(is.null(savevar$emlal$templateDP$customUnitsTable))
+    savevar$emlal$templateDP$customUnitsTable <- fread(paste(savevar$emlal$selectDP$dp_path,
+                                                             savevar$emlal$selectDP$dp_name,
+                                                             "metadata_templates",
+                                                             "custom_units.txt",
+                                                             sep = "/")
+                                                       )
+  # end of fread
+  customUnitsTable <- savevar$emlal$templateDP$customUnitsTable
+  # Custome Units Reactive Values
+  curv <- reactiveValues()
+  
+  lapply(colnames(customUnitsTable),
+         function(field){
+           id <- ns(paste0("custom_",field))
+           cat("Observe:",id,"\n")
+           curv[[id]] <- reactive({ input[[id]] })
+         })
+  
+  # output
+  cat("Output:",names(curv),"\n")
+  
+  return(curv)
+}
+
+
 # Needed vars
-# - path
-# - data.path
 # - columns from table
 #   * site
 #   * lat
@@ -165,3 +305,12 @@ r2js.boolean <- function(condition){
   return(tolower(as.character(condition)))
 }
 
+printReactiveValues <- function(values){
+  sapply(names(values), 
+         function(nn) 
+           if(is.reactive(values[[nn]]))
+             values[[nn]]()
+         else
+           values[[nn]]
+  )
+}
