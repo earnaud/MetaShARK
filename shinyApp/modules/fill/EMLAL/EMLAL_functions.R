@@ -134,7 +134,7 @@ nextTab <- function(input,output,session,
 prevTab <- function(input,output,session,
                     globalRV, previous){
   observeEvent(input$prevTab,{
-    globalRV$navigate <- globalRV$navigate+1
+    globalRV$navigate <- globalRV$navigate-1
     globalRV$previous <- previous
   })
 }
