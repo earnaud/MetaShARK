@@ -66,9 +66,9 @@ templateDPUI <- function(id, title, IM){
 templateDP <- function(input, output, session, IM, savevar, globalRV){
   ns <- session$ns
   
-  observeEvent(input$check2,{
-    browser()
-  })
+  # observeEvent(input$check2,{
+  #   browser()
+  # })
   # variable initialization ----
   
   # main local reactiveValues
@@ -388,8 +388,7 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
         path <- savevar$emlal$createDP$dp_data_files$metadatapath[cur_ind]
         table <- savevar$emlal$templateDP[[fn]]
         # action
-        browser()
-        # fwrite(table, path)
+        fwrite(table, path)
       }
       # check for direction: customUnits or catvars
       
