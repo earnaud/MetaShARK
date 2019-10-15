@@ -109,7 +109,8 @@ options(shiny.reactlog=TRUE)
     IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
     IM.fill = c("fillModule", "Fill")
     IM.EMLAL = c("EMLALModule","EML Assembly Line",
-                 "select","create","template","edit","make","publish")
+                 "select","create","template","customUnits",
+                 "catvars", "edit","make","publish")
     IM.welcome = c("welcomeModule", "Welcome")
     
   ## CSS var ----

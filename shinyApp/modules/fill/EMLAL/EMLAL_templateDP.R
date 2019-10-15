@@ -14,7 +14,6 @@ templateDPUI <- function(id, title, IM){
                   out. Please check the following attribute, and fill 
                   in at least the <span style='color:red;'>mandatory
                   </span> elements."),
-             # uiOutput(ns("fill_template"))
              fluidRow(
                tagList(
                  actionButton(ns("file_prev"),
@@ -51,12 +50,13 @@ templateDPUI <- function(id, title, IM){
       # Navigation buttons ----
       column(2,
              h4("Navigation"),
-             quitButton(ns(id), style = rightButtonStyle),
-             saveButton(ns(id), style = rightButtonStyle),
-             nextTabButton(ns(id), style = rightButtonStyle),
-             prevTabButton(ns(id), style = rightButtonStyle),
+             quitButton(id, style = rightButtonStyle),
+             saveButton(id, style = rightButtonStyle),
+             shinyjs::disabled(nextTabButton(id, style = rightButtonStyle)),
+             prevTabButton(id, style = rightButtonStyle),
              style = "text-align: center; padding: 0;"
              ,actionButton(ns("check2"),"Dev Check")
+             ,actionButton(ns("check3"),"Fill")
       ) # end column 2
     ) # end fluidPage
   ) # end return
@@ -66,9 +66,17 @@ templateDPUI <- function(id, title, IM){
 templateDP <- function(input, output, session, IM, savevar, globalRV){
   ns <- session$ns
   
-  # observeEvent(input$check2,{
-  #   browser()
-  # })
+  observeEvent(input$check2,{
+    browser()
+  })
+  observeEvent(input$check3,{
+    req(rv$current_file)
+    sapply(names(rv$attributesTable), function(nn){
+      rv$attributesTable[,nn] <- rep("a", 
+                                     dim(rv$attributesTable)[1])
+    })
+    savevar$emlal$templateDP[[rv$current_file]] <- rv$attributesTable
+  })
   # variable initialization ----
   
   # main local reactiveValues
@@ -92,6 +100,7 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   # on file change
   observeEvent(rv$current_file, {
     req(rv$current_file) # already req savevar$..$dp_data_files
+    req(savevar$emlal$createDP$dp_data_files$metadatapath)
     toRead <- savevar$emlal$createDP$dp_data_files
     toRead <- toRead$metadatapath[
       match(rv$current_file, toRead$name)
@@ -123,7 +132,7 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   observeEvent(input$file_prev,{
     req(rv$attributes
         # , rv$customUnits
-        )
+    )
     cur_ind <- match(rv$current_file, rv$files_names)
     if(cur_ind > 1){
       # save metadata
@@ -192,8 +201,8 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
                                                             "%, white ",
                                                             round(100*rv$current_attribute/dim(rv$attributesTable)[1]),
                                                             "%);"
-                                                            )
-                                                             
+                                             )
+                                             
     )
     )
   }
@@ -331,7 +340,7 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
         else{
           # hide UI
           sapply(inputNames, shinyjs::hide)
-
+          
           # set reactiveValue to NULL
           rv$attributes[[rvName]] <- rv$attributesTable[rv$current_attribute, rvName]
         }
@@ -348,22 +357,20 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   
   # regular saves in savevar - triggered in saveInput()
   observeEvent({
-    input$file_prev
-    input$file_next
-    input$attribute_prev
-    input$attribute_next
+    input
   },{
+    req(rv$current_file)
     savevar$emlal$templateDP[[rv$current_file]] <- rv$attributesTable
     cpltTrigger$trigger()
   })
   
   # check for completeness
   observe({
-    cpltTrigger$depend
+    cpltTrigger$depend()
     req(!is.null(rv$completed))
     rv$completed <- (
       isTruthy(rv$attributesTable$attributeName)
-      && all(lapply(rv$attributesTable$attributeName, isTruthy))
+      && all(sapply(rv$attributesTable$attributeName, isTruthy))
       && all(sapply(rv$attributesTable$class, isTruthy))
       && !any(grepl("!Add.*here!",rv$attributesTable$unit))
       && !any(grepl("!Add.*here!",rv$attributesTable$dateTimeFormatString))
@@ -377,24 +384,25 @@ templateDP <- function(input, output, session, IM, savevar, globalRV){
   })
   
   # Process data ----
-  observeEvent(input$nextTab, {
+  observeEvent(input[[ns("nextTab")]], {
     req(rv$completed)
     # for each attribute data frame
+    nextStep = 1 # default = catvars
     sapply(rv$files_names, function(fn){
       # write filled tables
-      {
-        # prepare variable
-        cur_ind <- match(rv$current_file, rv$files_names)
-        path <- savevar$emlal$createDP$dp_data_files$metadatapath[cur_ind]
-        table <- savevar$emlal$templateDP[[fn]]
-        # action
-        fwrite(table, path)
-      }
+      cur_ind <- match(fn, rv$files_names)
+      path <- savevar$emlal$createDP$dp_data_files$metadatapath[cur_ind]
+      table <- savevar$emlal$templateDP[[fn]]
+      fwrite(table, path)
+     
       # check for direction: customUnits or catvars
-      
+      if(nextStep > 0 &&
+         "custom" %in% savevar$emlal$templateDP[[fn]][,"unit"])
+          nextStep = 0
     })
-    
-  })
+    globalRV$navigate <- globalRV$navigate+nextStep
+  },
+  priority = 1)
   
   # Output ----
   return(savevar)

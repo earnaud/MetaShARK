@@ -63,8 +63,8 @@ customUnitsUI <- function(input_id, customUnitsTable){
                                                        "Describe your custom unit")
                     )
                   }), # end of lapply
-         )
-    ) # end of taglist
+    )
+  ) # end of taglist
 }
 
 ## Associated server functions ----
@@ -72,6 +72,7 @@ customUnitsUI <- function(input_id, customUnitsTable){
 # on quit button 
 onQuit <- function(input, output, session, 
                    globalRV, toSave, path, filename){
+    
   # modal dialog for quitting data description
   quitModal <- modalDialog(
     title = "You are leaving data description",
@@ -127,7 +128,8 @@ nextTab <- function(input,output,session,
   observeEvent(input$nextTab,{
     globalRV$navigate <- globalRV$navigate+1
     globalRV$previous <- previous
-  })
+  }, priority = -1
+  )
   
 }
 # .. one step before
@@ -173,12 +175,12 @@ initReactive <- function(sublist = NULL, savevar = NULL){
   
   # differential returns
   return(if(is.null(sublist))
-            savevar
-          else
-            switch(sublist,
-                   emlal = savevar$emlal,
-                   metafin = savevar$metafin)
-         )
+    savevar
+    else
+      switch(sublist,
+             emlal = savevar$emlal,
+             metafin = savevar$metafin)
+  )
 }
 
 # Files management ----
@@ -220,25 +222,6 @@ saveInput <- function(RV){
       names(RV$attributesTable)
       ]
   
-  # save potential custom units
-  # CU <- printReactiveValues(RV$customUnits)[
-  #   names(RV$customUnitsTable)]
-  # if(length(CU) != 0){
-  #   if(all(sapply(RV$customUnitsTable, is.na))){
-  #     RV$customUnitsTable <- printReactiveValues(
-  #       RV$customUnits)[names(RV$customUnitsTable)]
-  #   }
-  #   else if(!CU["id"] %in% RV$customUnitsTable["id"]){
-  #     RV$customUnitsTable <- rbind(
-  #       RV$customUnitsTable,
-  #       printReactiveValues(RV$customUnits)[
-  #         names(RV$customUnitsTable)]
-  #     )
-  #   }
-  #   else
-  #     message(CU["id"], "is already saved")
-  # }
-  # 
   # (re)set local save reactive value with NULL values
   sapply(colnames(RV$attributesTable), function(nn){
     RV$attributes[[nn]] <- NULL
@@ -265,7 +248,7 @@ customUnits <- function(input, output, session,
                                                              "metadata_templates",
                                                              "custom_units.txt",
                                                              sep = "/")
-                                                       )
+    )
   # end of fread
   customUnitsTable <- savevar$emlal$templateDP$customUnitsTable
   # Custome Units Reactive Values

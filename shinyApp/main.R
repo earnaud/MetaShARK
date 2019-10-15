@@ -49,6 +49,7 @@ server <- function(input,output,session){
   
   # Reactive values ----
   globalRV <- reactiveValues(
+    navigateMAX = 3, # to change while steps are developped
     navigate =  1,
     previous = "select"
   )
@@ -66,14 +67,19 @@ server <- function(input,output,session){
   # welcome
   welcome <- callModule(welcome, IM.welcome[1], IM = IM.welcome)
   # fill
+cat("evaluate0\n")
   savevar <- callModule(fill, 
                      IM.fill[1], 
                      IM = IM.fill,
                      globalRV = globalRV)
+  
+cat("evaluate1\n")
     callModule(EMLAL, 
                IM.EMLAL[1], 
                IM = IM.EMLAL,
                globalRV = globalRV)
+    
+cat("evaluate2\n")
     savevar <-
       callModule(selectDP, 
                  IM.EMLAL[3], 
@@ -81,6 +87,8 @@ server <- function(input,output,session){
                  DP.path = DP.PATH,
                  savevar = savevar,
                  globalRV = globalRV)
+    
+cat("evaluate3\n")
     savevar <-
       callModule(createDP, 
                  IM.EMLAL[4], 

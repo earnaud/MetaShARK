@@ -27,12 +27,9 @@ createDPUI <- function(id, title, IM){
         ), # end of column 1
         column(2,
                h4("Navigation"),
-               quitButton(ns(id), style = rightButtonStyle),
-               saveButton(ns(id), style = rightButtonStyle),
-               nextTabButton(ns(id), style = rightButtonStyle),
-               # actionButton(ns("nextTab"),"Next",
-               #              icon = icon("arrow-right"),
-               #              style = rightButtonStyle),
+               quitButton(id, style = rightButtonStyle),
+               saveButton(id, style = rightButtonStyle),
+               nextTabButton(id, style = rightButtonStyle),
                textOutput(ns("warning_data_size")),
                textOutput(ns("overwrite")),
                style = "text-align: center; padding: 0;"
@@ -42,7 +39,7 @@ createDPUI <- function(id, title, IM){
 }
 
 createDP <- function(input, output, session, IM, savevar, globalRV){
-  ns <- session$ns
+  # ns <- session$ns
   
   # Variable initialization ----
   rv <- reactiveValues(
@@ -75,6 +72,8 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
              savevar, 
              savevar$emlal$selectDP$dp_path, 
              savevar$emlal$selectDP$dp_name)
+  callModule(nextTab, IM.EMLAL[4],
+             globalRV, "create")
   
   # Data file upload ----
   # Add data files
@@ -170,6 +169,7 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
     
     # actions
     # -- copy files to <dp>_emldp/<dp>/data_objects
+    browser()
     sapply(rv$data_files$datapath,
            file.copy, 
            to = paste0(path,"/",dp,"/data_objects/"),
@@ -198,11 +198,7 @@ createDP <- function(input, output, session, IM, savevar, globalRV){
       data.path = paste0(path,"/",dp,"/data_objects"),
       data.table = rv$data_files$name,
     )
-    
-    # move on
-    globalRV$navigate <- globalRV$navigate+1
-    globalRV$previous <- "create"
-  })
+  }, priority = 1)
   
   # Output ----
   return(savevar)
