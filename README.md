@@ -36,6 +36,11 @@ MetaShARK require following libraries to perform:
 * [devtools](https://CRAN.R-project.org/package=devtools)
 * [RefManageR](https://CRAN.R-project.org/package=RefManageR)
 
+## Coming soon
+
+* Packaging: MetaShARK's devs are currently working to make a R library out of the current git. This shall greatly ease the MetaShARK's installation (with a single `install.packages()`).
+* Attributes filling: EML Assembly Line shiny modules are being written. 
+
 ## Releases
 
 ### Release 20190918 - EML 2.2.0
