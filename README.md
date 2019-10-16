@@ -23,6 +23,7 @@ MetaShARK require following libraries to perform:
 * [shiny](https://CRAN.R-project.org/package=shiny)
 * [shinyTree](https://CRAN.R-project.org/package=shinyTree)
 * [shinydashboard](https://CRAN.R-project.org/package=shinydashboard)
+* [shinyFiles](https://CRAN.R-project.org/package=shinyFiles)
 * [shinyjs](https://CRAN.R-project.org/package=shinyjs)
 * [tcltk2](https://CRAN.R-project.org/package=tcltk2)
 * [tippy](https://CRAN.R-project.org/package=tippy)
