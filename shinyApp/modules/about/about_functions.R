@@ -1,5 +1,4 @@
-# about_functions.R
-
+#' @import RefManageR shiny 
 renderBibliography <- function(bib){
   NoCite(bib, "*")
   renderUI(

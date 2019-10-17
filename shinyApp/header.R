@@ -75,7 +75,6 @@ options(shiny.reactlog=TRUE)
     UNIT.LIST <- c("custom", get_unitList()$units$name)
     
   ## Dir creation ----
-    dir.create(".cache/", recursive = TRUE, showWarnings = FALSE)
     dir.create(DP.PATH, recursive = TRUE, showWarnings = FALSE)
 
 ### RESOURCES ###
@@ -109,12 +108,11 @@ options(shiny.reactlog=TRUE)
     IM.doc = c("docModule", "Documentation", "docSelect","docPath","docSearch")
     IM.fill = c("fillModule", "Fill")
     IM.EMLAL = c("EMLALModule","EML Assembly Line",
-                 "select","create","template","edit","make","publish")
+                 "select","create","template","customUnits",
+                 "catvars", "edit","make","publish")
     IM.welcome = c("welcomeModule", "Welcome")
     
   ## CSS var ----
-    menuWidth = "250px"
-    
     sidebarStyle = "overflow-y: scroll;
                       max-height: 800px;"
     

@@ -66,20 +66,27 @@ EMLAL <- function(input, output, session, IM, globalRV){
   ns <- session$ns
   
   # variable initialization
-  steps = paste0(c("select","create","template","edit","make","publish"), "-tab")
+  steps = paste0(c("select","create","template","customUnits",
+                   "catvars", "edit","make","publish"), "-tab")
   
   # Output
   output$currentUI <- renderUI({
     switch(globalRV$navigate,
-           `1` = selectDPUI(id = IM.EMLAL[3],
+           `1` = selectDPUI(id = IM.EMLAL[2+globalRV$navigate],
                             IM = IM.EMLAL,
-                            title = steps[1]),
-           `2` = createDPUI(id = IM.EMLAL[4],
+                            title = steps[globalRV$navigate]),
+           `2` = createDPUI(id = IM.EMLAL[2+globalRV$navigate],
                             IM = IM.EMLAL,
-                            title = steps[2]),
-           `3` = templateDPUI(id = IM.EMLAL[5],
-                            IM = IM.EMLAL,
-                            title = steps[3])
+                            title = steps[globalRV$navigate]),
+           `3` = templateDPUI(id = IM.EMLAL[2+globalRV$navigate],
+                              IM = IM.EMLAL,
+                              title = steps[globalRV$navigate]),
+           `4` = customUnitsUI(id = IM.EMLAL[2+globalRV$navigate],
+                               IM = IM.EMLAL,
+                               title = steps[globalRV$navigate]),
+           `5` = catvarsUI(id = IM.EMLAL[2+globalRV$navigate],
+                           IM = IM.EMLAL,
+                           title = steps[globalRV$navigate])
                   )
   })
   

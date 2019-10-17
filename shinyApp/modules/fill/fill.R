@@ -26,6 +26,8 @@ fill <- function(input, output, session, IM, globalRV){
       globalRV$navigate,
       savevar$emlal$step
     )
+    if(savevar$emlal$step > globalRV$navigateMAX)
+      savevar$emlal$step <- globalRV$navigateMAX
   })
   
   return(savevar)
